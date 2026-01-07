@@ -56,12 +56,15 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("_")] Underscore,
         [Description(":=")] Assign,
         [Description(";")] Semicolon,
+        [Description(",")] Comma
     }
 
     public static class OperatorExtension
     {
         private static readonly Dictionary<string, Operator> key_map = [];
         private static readonly Dictionary<Operator, string> value_map = [];
+        private static readonly Dictionary<Operator, LTOperator> token_map = [];
+
         private static readonly Operator[] values = Enum.GetValues<Operator>();
 
         static OperatorExtension() {
@@ -82,11 +85,13 @@ namespace GoPowered.Lang.Lexer.Token
 
                 key_map.Add(str, op);
                 value_map.Add(op, str);
+                token_map.Add(op, new LTOperator(op));
             }
         }
 
         extension(Operator op)
         {
+            [Unstable]
             public static Operator FromCode(string key)
             {
                 return key_map.GetValueOrDefault(key);
@@ -97,6 +102,13 @@ namespace GoPowered.Lang.Lexer.Token
                 return value_map.GetValueOrDefault(op);
             }
 
+            public LTOperator ToToken()
+            {
+                return token_map.GetValueOrDefault(op)
+                       ?? throw new MissingOperatorException();
+            }
+
+            [Unstable]
             public static Operator[] Values()
             {
                 return values;
@@ -104,5 +116,6 @@ namespace GoPowered.Lang.Lexer.Token
         }
     }
 
+    [Unstable]
     public class MissingOperatorException : Exception;
 }

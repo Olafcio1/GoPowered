@@ -1,6 +1,4 @@
 ﻿namespace GoPowered.Lang.Parser
 {
-    public interface IParserToken
-    {
-    }
+    public interface IParserToken;
 }
