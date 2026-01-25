@@ -6,9 +6,6 @@
 
         private LTNewLine() {}
 
-        public string Type()
-        {
-            return "newline";
-        }
+        public string Type() => "newline";
     }
 }

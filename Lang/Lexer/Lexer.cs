@@ -35,7 +35,7 @@ namespace GoPowered.Lang.Lexer
                     while (Consume() != '\n');
                 else if (Now("/*"))
                     // Multiline comments
-                    while (!Now("*/")) ;
+                    while (!Now("*/"));
                 else throw new LexerError("unexpected '" + Consume() + "'");
                 #pragma warning restore CS0642
             }
@@ -169,7 +169,11 @@ namespace GoPowered.Lang.Lexer
                     return true;
                 }
             }
-            else if (GetFloatingPoint(out string? point, negindex))
+            else if (
+                    !ReachedEOF(2) &&
+                    CharUtils.IsDigit(Peek(negindex + 1)) &&
+                    GetFloatingPoint(out string? point, negindex)
+            )
             {
                 output.Add(new LTFloat(double.Parse(point) * negmul));
                 return true;
@@ -263,8 +267,8 @@ namespace GoPowered.Lang.Lexer
             }
         }
 
-        protected bool ReachedEOF() {
-            return index >= input.Length;
+        protected bool ReachedEOF(int further = 0) {
+            return index + further >= input.Length;
         }
     }
 }
