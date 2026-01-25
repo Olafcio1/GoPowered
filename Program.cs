@@ -1,5 +1,7 @@
 ﻿using GoPowered.Lang.Lexer;
 using GoPowered.Lang.Parser;
+using System.Collections;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace GoPowered {
@@ -15,22 +17,7 @@ namespace GoPowered {
                 parser.Parse();
 
                 Console.Write(lexed.Count);
-                Console.WriteLine("[");
-                foreach (var token in parser.output)
-                {
-                    var type = token.GetType();
-                    var properties = type.GetProperties();
-
-                    Console.Write("  " + type.Name + "{");
-                    foreach (var f in properties)
-                    {
-                        Console.Write(f.Name);
-                        Console.Write("=");
-                        Console.Write(f.GetValue(token));
-                    }
-                    Console.Write("}\n");
-                }
-                Console.WriteLine("]");
+                Console.Write(Repr(parser.output));
             } else {
                 Console.WriteLine("┌───────┤ GoPowered SDK ├───────┐");
                 Console.WriteLine("│                               │");
@@ -38,6 +25,68 @@ namespace GoPowered {
                 Console.WriteLine("│ 🧱 build - builds a workspace │");
                 Console.WriteLine("│                               │");
                 Console.WriteLine("└───────────────────────────────┘");
+            }
+        }
+
+        static string Repr(object? value, string nl = "\n", string tab1 = "", string tab2 = "  ", string objAdditional = "")
+        {
+            if (value is string || value is int || value is short || value is double || value is long || value is float || value is bool)
+            {
+                return "" + value;
+            }
+            else if (value == null)
+            {
+                return "null";
+            }
+            else if (value is IEnumerable array)
+            {
+                var repr = "[";
+
+                foreach (var val in array)
+                    repr += (nl + tab2 + Repr(val, tab1: tab1, tab2: tab2 + "  "));
+
+                repr += nl + tab1;
+                repr += "]";
+
+                return repr;
+            } else
+            {
+                var type = value.GetType();
+                var properties = type.GetProperties();
+
+                var tab1x = tab1;
+                var tab2x = tab2;
+
+                if (properties.Any(prop => prop.GetValue(value) is IEnumerable))
+                    tab1x += "  ";
+
+                var repr = type.Name + objAdditional + "{";
+                var index = 0;
+                foreach (var f in properties)
+                {
+                    var val = f.GetValue(value);
+
+                    if (val == null)
+                    {
+                        repr += "null";
+                    }
+                    else if (f.Name != val.GetType().Name)
+                    {
+                        repr += (f.Name);
+                        repr += ("=");
+                        repr += Repr(val, tab1: tab1x, tab2: tab2x);
+                    }
+                    else
+                    {
+                        repr += Repr(val, tab1: tab1x, tab2: tab2x, objAdditional: "=");
+                    }
+
+                    if (++index != properties.Length)
+                        repr += (", ");
+                }
+
+                repr += ("}");
+                return repr;
             }
         }
     }

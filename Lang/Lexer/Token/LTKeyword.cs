@@ -9,6 +9,8 @@ namespace GoPowered.Lang.Lexer.Token
         internal LTKeyword(Keyword Value) {
             this.Value = Value;
         }
+
+        public string Type() => "keyword";
     }
 
     public enum Keyword

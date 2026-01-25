@@ -1,4 +1,4 @@
-﻿using GoPowered.Lang.Parser.Token.Base;
+﻿using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Type;
 
 namespace GoPowered.Lang.Parser.Token

@@ -1,4 +1,4 @@
-﻿namespace GoPowered.Lang.Parser.Token.Base
+﻿namespace GoPowered.Lang.Parser.Token.Statement
 {
     public interface IStatement : IParserToken;
 }

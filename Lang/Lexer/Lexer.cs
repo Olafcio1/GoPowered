@@ -20,10 +20,13 @@ namespace GoPowered.Lang.Lexer
             while (!ReachedEOF())
             {
                 #pragma warning disable CS0642
-                if (LexOperator());
+                if (LexNumber());
+                else if (LexOperator());
                 else if (LexLiteral());
                 else if (LexString());
-                else if (LexNumber());
+                else if (Now('\r') || Now('\n'))
+                    // Newlines
+                    output.Add(LTNewLine.INSTANCE);
                 else if (Peek() <= 32)
                     // Control keys
                     index++;
@@ -32,7 +35,7 @@ namespace GoPowered.Lang.Lexer
                     while (Consume() != '\n');
                 else if (Now("/*"))
                     // Multiline comments
-                    while (!Now("*/"));
+                    while (!Now("*/")) ;
                 else throw new LexerError("unexpected '" + Consume() + "'");
                 #pragma warning restore CS0642
             }
@@ -140,7 +143,7 @@ namespace GoPowered.Lang.Lexer
             var neg = Peek() == '-';
 
             var negindex = neg ? 1 : 0;
-            var negmul = neg ? 1 : -1;
+            var negmul = neg ? -1 : 1;
 
             if (Now("0x", negindex))
             {
@@ -153,10 +156,12 @@ namespace GoPowered.Lang.Lexer
             }
             else if (CharUtils.IsDigit(Peek(negindex)))
             {
+                index += negindex;
+
                 var value = GetText(CharUtils.IsDigit);
                 if (GetFloatingPoint(out string? point, negindex))
                 {
-                    output.Add(new LTFloat(float.Parse(value + point) * negmul));
+                    output.Add(new LTFloat(double.Parse(value + point) * negmul));
                     return true;
                 } else
                 {
@@ -166,7 +171,7 @@ namespace GoPowered.Lang.Lexer
             }
             else if (GetFloatingPoint(out string? point, negindex))
             {
-                output.Add(new LTFloat(float.Parse(point) * negmul));
+                output.Add(new LTFloat(double.Parse(point) * negmul));
                 return true;
             }
 

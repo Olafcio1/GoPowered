@@ -2,10 +2,21 @@
 
 namespace GoPowered.Base
 {
-    public abstract class BaseParser<TokenType, ExceptionType>(List<TokenType> input)
+    public abstract class BaseParser<TokenType, ExceptionType>
     {
         protected readonly List<TokenType> input;
         protected int index;
+
+        /**
+         * What the helly I used the primary constructor and
+         * then it fucked the other day
+         *
+         * I'm NOT using it again 🥀
+         **/
+        public BaseParser(List<TokenType> input)
+        {
+            this.input = input;
+        }
 
         protected bool ReachedEOF()
         {
@@ -47,6 +58,8 @@ namespace GoPowered.Base
             return input[index + after];
         }
 
+        protected abstract string TypeOf(TokenType token);
+
         protected bool Now((string?, TokenType?)[] types, bool consume = false)
         {
             var i = 0;
@@ -57,7 +70,7 @@ namespace GoPowered.Base
 
                 if (token == null)
                 {
-                    if (haveType.Name != type)
+                    if (TypeOf(have) != type)
                         return false;
                 }
                 else

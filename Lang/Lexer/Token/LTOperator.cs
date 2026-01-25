@@ -3,7 +3,10 @@ using System.Reflection;
 
 namespace GoPowered.Lang.Lexer.Token
 {
-    public record LTOperator(Operator Value) : ILexerToken;
+    public record LTOperator(Operator Value) : ILexerToken
+    {
+        public string Type() => "operator";
+    }
 
     public enum Operator
     {
@@ -56,7 +59,8 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("_")] Underscore,
         [Description(":=")] Assign,
         [Description(";")] Semicolon,
-        [Description(",")] Comma
+        [Description(",")] Comma,
+        [Description(".")] Dot
     }
 
     public static class OperatorExtension

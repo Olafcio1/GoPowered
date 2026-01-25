@@ -1,4 +1,7 @@
 ﻿namespace GoPowered.Lang.Lexer
 {
-    public interface ILexerToken;
+    public interface ILexerToken
+    {
+        string Type();
+    }
 }

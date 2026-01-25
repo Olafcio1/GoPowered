@@ -1,4 +1,7 @@
 ﻿namespace GoPowered.Lang.Lexer.Token
 {
-    public record LTFloat(float Value) : ILexerToken;
+    public record LTFloat(double Value) : ILexerToken
+    {
+        public string Type() => "float";
+    }
 }
