@@ -47,7 +47,7 @@ namespace GoPowered.Lang.Lexer
         {
             foreach (var op in Operator.Values())
             {
-                var str = op.ToCode();
+                var str = op.ToCode()!;
 
                 var ok = true;
                 var i = 0;
@@ -175,7 +175,7 @@ namespace GoPowered.Lang.Lexer
                     GetFloatingPoint(out string? point, negindex)
             )
             {
-                output.Add(new LTFloat(double.Parse(point) * negmul));
+                output.Add(new LTFloat(double.Parse(point!) * negmul));
                 return true;
             }
 
