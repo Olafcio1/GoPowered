@@ -127,6 +127,10 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.STRING;
             }
+            else if (Now([(null, Keyword.BOOL.ToToken())], true))
+            {
+                return PrimitiveType.BOOL;
+            }
             else if (Now([(null, Keyword.INT.ToToken())], true))
             {
                 return PrimitiveType.INT;
@@ -257,14 +261,22 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Keyword.RETURN.ToToken())], true))
             {
-                var values = new List<Expression>();
+                if (Now([("newline", null)], false))
+                {
+                    return new StmtReturn(null);
+                }
+                else
+                {
+                    var values = new List<Expression>();
 
-                do {
-                    var expr = ParseExpression();
-                    values.Add(expr);
-                } while (Now([(null, Operator.Comma.ToToken())], true));
+                    do
+                    {
+                        var expr = ParseExpression();
+                        values.Add(expr);
+                    } while (Now([(null, Operator.Comma.ToToken())], true));
 
-                return new StmtReturn(values);
+                    return new StmtReturn(values);
+                }
             }
             else
             {
@@ -287,6 +299,10 @@ namespace GoPowered.Lang.Parser
                 return new Expression(new ESTInteger(Consume<LTInteger>().Value), null, Singular: true);
             else if (Now([("float", null)], false))
                 return new Expression(new ESTFloat(Consume<LTFloat>().Value), null, Singular: true);
+            else if (Now([(null, Keyword.TRUE.ToToken())], true))
+                return new Expression(ESTBoolean.TRUE, null, Singular: true);
+            else if (Now([(null, Keyword.FALSE.ToToken())], true))
+                return new Expression(ESTBoolean.FALSE, null, Singular: true);
             else return ParsePartExpression();
         }
 
