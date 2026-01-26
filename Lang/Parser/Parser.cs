@@ -122,7 +122,8 @@ namespace GoPowered.Lang.Parser
             {
                 var name = Consume<LTLiteral>().Value;
                 return new UniqueType(name);
-            } else if (Now([(null, Keyword.STRING.ToToken())], true))
+            }
+            else if (Now([(null, Keyword.STRING.ToToken())], true))
             {
                 return PrimitiveType.STRING;
             }
@@ -190,12 +191,18 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.ERROR.ToToken())], true))
             {
                 return PrimitiveType.ERROR;
-            } else if (Now([(null, Operator.LSquare.ToToken())], true))
+            }
+            else if (Now([(null, Operator.LSquare.ToToken())], true))
             {
                 Require(Operator.RSquare.ToToken(), "']'");
 
                 var type = ParseType();
                 return new ListType(type);
+            }
+            else if (Now([(null, Operator.Star.ToToken())], true))
+            {
+                var type = ParseType();
+                return new PointerType(type);
             } else
             {
                 throw new ParserError("Expected a type");
