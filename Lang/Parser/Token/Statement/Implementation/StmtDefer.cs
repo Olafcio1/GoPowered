@@ -3,7 +3,7 @@
 namespace GoPowered.Lang.Parser.Token.Statement.Implementation
 {
     /**
-     * Used to evaluate an effective expression.
+     * Used to defer a function call to the return time.
      */
-    public record StmtExpression(Expression Expr) : IStatement;
+    public record StmtDefer(Expression Expr) : IStatement;
 }

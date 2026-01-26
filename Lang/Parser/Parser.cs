@@ -10,6 +10,7 @@ using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Token.Statement.Implementation;
 using GoPowered.Lang.Parser.Type;
 using GoPowered.Lang.Parser.Type.Go;
+using System.Net;
 
 namespace GoPowered.Lang.Parser
 {
@@ -183,6 +184,8 @@ namespace GoPowered.Lang.Parser
                     continue;
 
                 code.Add(ParseStatement());
+                //Console.WriteLine(Peek(0));
+                Require(LTNewLine.INSTANCE, "newline");
             }
 
             return code;
@@ -190,18 +193,68 @@ namespace GoPowered.Lang.Parser
 
         protected IStatement ParseStatement()
         {
-            var expr = ParseExpression();
-            return new StmtExpression(expr);
+            if (!ReachedEOF(1) && Peek(1).Type().Equals("operator") && ((LTOperator)Peek(1)).Value == Operator.Assign)
+            {
+                var name = Consume<LTLiteral>().Value;
+                Require(Operator.Assign.ToToken(), "':='");
+                var value = ParseExpression();
+
+                return new StmtAssign(name, value);
+            }
+            else if (Now([(null, Keyword.DEFER.ToToken())], true))
+            {
+                var expr = ParseExpression();
+                if (expr.Parts == null || !(expr.Parts[expr.Parts.Count - 1] is EPCall))
+                    throw new ParserError("Expected a function call after 'defer'");
+
+                return new StmtDefer(expr);
+            }
+            else if (Now([(null, Keyword.GO.ToToken())], true))
+            {
+                var expr = ParseExpression();
+                if (expr.Parts == null || !(expr.Parts[expr.Parts.Count - 1] is EPCall))
+                    throw new ParserError("Expected a function call after 'go'");
+
+                return new StmtGo(expr);
+            }
+            else if (Now([(null, Keyword.RETURN.ToToken())], true))
+            {
+                var values = new List<Expression>();
+                var first = true;
+
+                while (true) {
+                    if (first)
+                        first = false;
+                    else if (!Now([(null, Operator.Comma.ToToken())], true))
+                        break;
+
+                    var expr = ParseExpression();
+                    values.Add(expr);
+                }
+
+                return new StmtReturn(values);
+            }
+            else
+            {
+                var expr = ParseExpression();
+
+                if (Now([(null, Operator.Set.ToToken())], true))
+                    if (expr.Parts != null && expr.Parts[expr.Parts.Count - 1] is EPCall)
+                        throw new ParserError("Expected a reference before '='");
+                    else return new StmtSet(expr, ParseExpression());
+                else 
+                    return new StmtExpression(expr);
+            }
         }
 
         protected Expression ParseExpression()
         {
             if (Now([("string", null)], false))
-                return new Expression(new ESTString(Consume<LTString>().Value), null, singular: true);
+                return new Expression(new ESTString(Consume<LTString>().Value), null, Singular: true);
             else if (Now([("integer", null)], false))
-                return new Expression(new ESTInteger(Consume<LTInteger>().Value), null, singular: true);
+                return new Expression(new ESTInteger(Consume<LTInteger>().Value), null, Singular: true);
             else if (Now([("float", null)], false))
-                return new Expression(new ESTFloat(Consume<LTFloat>().Value), null, singular: true);
+                return new Expression(new ESTFloat(Consume<LTFloat>().Value), null, Singular: true);
             else return ParsePartExpression();
         }
 
@@ -241,6 +294,7 @@ namespace GoPowered.Lang.Parser
                     }
 
                     parts.Add(new EPCall(args));
+                    continue;
                 } else
                 {
                     break;

@@ -18,9 +18,9 @@ namespace GoPowered.Base
             this.input = input;
         }
 
-        protected bool ReachedEOF()
+        protected bool ReachedEOF(int additional = 0)
         {
-            return index >= input.Count;
+            return index + additional >= input.Count;
         }
 
         protected TokenType Consume()
@@ -66,7 +66,7 @@ namespace GoPowered.Base
             foreach (var (type, token) in types)
             {
                 var have = Peek(i++);
-                var haveType = have.GetType();
+                var haveType = have!.GetType();
 
                 if (token == null)
                 {

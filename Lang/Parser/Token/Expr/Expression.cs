@@ -3,6 +3,6 @@
     public record Expression(
         IExpressionTarget Target,
         List<IExpressionPart>? Parts,
-        bool singular = false
+        bool Singular = false
     );
 }

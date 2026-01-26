@@ -46,7 +46,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("default")] DEFAULT,
         [Description("fallthrough")] FALLTHROUGH,
         // Special Functions
-        [Description("panic")] PANIC,
+        //[Description("panic")] PANIC,   | panic may accept a parameter so its a function like any other
         [Description("make")] MAKE,
         // Special Values
         [Description("nil")] NIL,

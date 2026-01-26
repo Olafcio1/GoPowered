@@ -3,7 +3,7 @@
 namespace GoPowered.Lang.Parser.Token.Statement.Implementation
 {
     /**
-     * Used to evaluate an effective expression.
+     * Used to return values from a function.
      */
-    public record StmtExpression(Expression Expr) : IStatement;
+    public record StmtReturn(List<Expression> Values) : IStatement;
 }
