@@ -311,7 +311,7 @@ namespace GoPowered.Lang.Parser
         {
             IExpressionTarget? target;
             if ((target = ParseSingularExpression(optional: true)) != null)
-                return new Expression(target, null, Singular: true);
+                return new Expression(target, null, 0, Singular: true);
             else return ParsePartExpression();
         }
 
@@ -332,11 +332,26 @@ namespace GoPowered.Lang.Parser
             else throw new ParserError("Expected a singular expression");
         }
 
+        protected int CountPointers()
+        {
+            var pointers = 0;
+
+            while (true)
+                if (Now([(null, Operator.Ampersand.ToToken())], true))
+                    pointers++;
+                else if (Now([(null, Operator.Star.ToToken())], true))
+                    pointers--;
+                else break;
+
+            return pointers;
+        }
+
         /**
          * I also like to call it the `friendly expression`, as it's friendly to [expression] parts
          */
         protected Expression ParsePartExpression()
         {
+            var pointers = CountPointers();
             var target = ParseExpressionTarget();
             var parts = new List<IExpressionPart>();
 
@@ -377,7 +392,8 @@ namespace GoPowered.Lang.Parser
 
             return new Expression(
                 target,
-                parts
+                parts,
+                pointers
             );
         }
 
@@ -387,6 +403,12 @@ namespace GoPowered.Lang.Parser
             {
                 var literal = Consume<LTLiteral>().Value;
                 return new ETReference(literal);
+            }
+            else if (Now([(null, Operator.LParen.ToToken())], true))
+            {
+                var expr = ParsePartExpression();
+                Require(Operator.RParen.ToToken(), "')'");
+                return new ETNest(expr);
             } else
             {
                 // Should this error message be 'Expected an expression' instead?
