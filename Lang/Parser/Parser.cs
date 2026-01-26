@@ -80,9 +80,40 @@ namespace GoPowered.Lang.Parser
                 args.Add(new Argument(aName, aType));
             }
 
-            var body = ParseCode();
+            List<ReturnValue>? returns = null;
 
-            output.Add(new PTFunction(name, args, body));
+            if (!Now([(null, Operator.LCurly.ToToken())], false))
+            {
+                returns = new();
+
+                if (Now([(null, Operator.LParen.ToToken())], true))
+                {
+                    do
+                    {
+                        string? rName = null;
+                        if (Peek(0).Type() == "literal" && !Peek(1).Equals(Operator.RParen.ToToken()))
+                            rName = Consume<LTLiteral>().Value;
+
+                        var rType = ParseType();
+                        returns.Add(new ReturnValue(
+                            rName,
+                            rType
+                        ));
+                    } while (Now([(null, Operator.Comma.ToToken())], true));
+
+                    Require(Operator.RParen.ToToken(), ")");
+                }
+                else
+                {
+                    returns.Add(new ReturnValue(
+                        null,
+                        ParseType()
+                    ));
+                }
+            }
+
+            var body = ParseCode();
+            output.Add(new PTFunction(name, args, body, returns));
         }
 
         protected IType ParseType()
@@ -220,17 +251,11 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.RETURN.ToToken())], true))
             {
                 var values = new List<Expression>();
-                var first = true;
 
-                while (true) {
-                    if (first)
-                        first = false;
-                    else if (!Now([(null, Operator.Comma.ToToken())], true))
-                        break;
-
+                do {
                     var expr = ParseExpression();
                     values.Add(expr);
-                }
+                } while (Now([(null, Operator.Comma.ToToken())], true));
 
                 return new StmtReturn(values);
             }
