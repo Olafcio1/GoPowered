@@ -243,6 +243,22 @@ namespace GoPowered.Lang.Parser
 
                 return new StmtAssign(name, value);
             }
+            else if (Now([(null, Keyword.VARIABLE.ToToken())], true))
+            {
+                var name = Consume<LTLiteral>().Value;
+                Require(Operator.Set.ToToken(), "'='");
+                var value = ParseExpression();
+
+                return new StmtAssign(name, value);
+            }
+            else if (Now([(null, Keyword.CONST.ToToken())], true))
+            {
+                var name = Consume<LTLiteral>().Value;
+                Require(Operator.Set.ToToken(), "'='");
+                var value = ParseSingularExpression();
+
+                return new StmtConst(name, value!);
+            }
             else if (Now([(null, Keyword.DEFER.ToToken())], true))
             {
                 var expr = ParseExpression();
@@ -293,17 +309,27 @@ namespace GoPowered.Lang.Parser
 
         protected Expression ParseExpression()
         {
-            if (Now([("string", null)], false))
-                return new Expression(new ESTString(Consume<LTString>().Value), null, Singular: true);
-            else if (Now([("integer", null)], false))
-                return new Expression(new ESTInteger(Consume<LTInteger>().Value), null, Singular: true);
-            else if (Now([("float", null)], false))
-                return new Expression(new ESTFloat(Consume<LTFloat>().Value), null, Singular: true);
-            else if (Now([(null, Keyword.TRUE.ToToken())], true))
-                return new Expression(ESTBoolean.TRUE, null, Singular: true);
-            else if (Now([(null, Keyword.FALSE.ToToken())], true))
-                return new Expression(ESTBoolean.FALSE, null, Singular: true);
+            IExpressionTarget? target;
+            if ((target = ParseSingularExpression(optional: true)) != null)
+                return new Expression(target, null, Singular: true);
             else return ParsePartExpression();
+        }
+
+        protected IExpressionTarget? ParseSingularExpression(bool optional = false)
+        {
+            if (Now([("string", null)], false))
+                return new ESTString(Consume<LTString>().Value);
+            else if (Now([("integer", null)], false))
+                return new ESTInteger(Consume<LTInteger>().Value);
+            else if (Now([("float", null)], false))
+                return new ESTFloat(Consume<LTFloat>().Value);
+            else if (Now([(null, Keyword.TRUE.ToToken())], true))
+                return ESTBoolean.TRUE;
+            else if (Now([(null, Keyword.FALSE.ToToken())], true))
+                return ESTBoolean.FALSE;
+            else if (optional)
+                return null;
+            else throw new ParserError("Expected a singular expression");
         }
 
         /**
