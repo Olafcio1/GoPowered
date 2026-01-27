@@ -43,9 +43,11 @@ namespace GoPowered.Lang.Parser
             while (!ReachedEOF())
             {
                 if (Now([(null, Keyword.FUNCTION.ToToken())]))
-                    ParseFunction();
+                    output.Add(ParseFunctionDef());
                 else if (Now([("newline", null)], true))
                     continue;
+                else if (Now([(null, Keyword.TYPE.ToToken())]))
+                    output.Add(ParseTypeDef());
                 else
                     throw new ParserError("Expected a global statement");
             }
@@ -57,7 +59,7 @@ namespace GoPowered.Lang.Parser
                 Consume();
         }
 
-        protected void ParseFunction()
+        protected PTFunction ParseFunctionDef()
         {
             Require(Keyword.FUNCTION.ToToken(), "'func'");
 
@@ -77,14 +79,17 @@ namespace GoPowered.Lang.Parser
                 var aName = Consume<LTLiteral>().Value;
                 var aType = ParseType();
 
-                args.Add(new Argument(aName, aType));
+                args.Add(new Argument(
+                    aName,
+                    aType!
+                ));
             }
 
             List<ReturnValue>? returns = null;
 
             if (!Now([(null, Operator.LCurly.ToToken())], false))
             {
-                returns = new();
+                returns = [];
 
                 if (Now([(null, Operator.LParen.ToToken())], true))
                 {
@@ -97,7 +102,7 @@ namespace GoPowered.Lang.Parser
                         var rType = ParseType();
                         returns.Add(new ReturnValue(
                             rName,
-                            rType
+                            rType!
                         ));
                     } while (Now([(null, Operator.Comma.ToToken())], true));
 
@@ -107,16 +112,51 @@ namespace GoPowered.Lang.Parser
                 {
                     returns.Add(new ReturnValue(
                         null,
-                        ParseType()
+                        ParseType()!
                     ));
                 }
             }
 
             var body = ParseCode();
-            output.Add(new PTFunction(name, args, body, returns));
+            return new PTFunction(name, args, body, returns);
         }
 
-        protected IType ParseType()
+        protected IParserToken ParseTypeDef()
+        {
+            Require(Keyword.TYPE.ToToken(), "'type'");
+
+            var name = Consume<LTLiteral>().Value;
+
+            if (Now([(null, Keyword.STRUCT.ToToken())], true))
+                return ParseTypeStruct(name);
+            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+                return ParseTypeInterface(name);
+            else if (ParseType_out(out IType? type, optional: true))
+                return new PTTypeClone(name, type!);
+            else if (Now([(null, Operator.Set.ToToken())], true))
+                return new PTTypeAlias(name, ParseType()!);
+            else throw new ParserError("Expected a struct, interface, type alias or type clone");
+        }
+
+        protected IParserToken ParseTypeStruct(string name)
+        {
+            // TODO
+            throw new ParserError("Not Implemented Yet");
+        }
+
+        protected IParserToken ParseTypeInterface(string name)
+        {
+            // TODO
+            throw new ParserError("Not Implemented Yet");
+        }
+
+        protected bool ParseType_out(out IType? type, bool optional)
+        {
+            type = ParseType(optional);
+            return type != null;
+        }
+
+        protected IType? ParseType(bool optional = false)
         {
             if (Now([("literal", null)]))
             {
@@ -190,7 +230,7 @@ namespace GoPowered.Lang.Parser
                 Require(Operator.RSquare.ToToken(), "']'");
 
                 var value = ParseType();
-                return new MapType(key, value);
+                return new MapType(key!, value!);
             }
             else if (Now([(null, Keyword.ERROR.ToToken())], true))
             {
@@ -201,12 +241,16 @@ namespace GoPowered.Lang.Parser
                 Require(Operator.RSquare.ToToken(), "']'");
 
                 var type = ParseType();
-                return new ListType(type);
+                return new ListType(type!);
             }
             else if (Now([(null, Operator.Star.ToToken())], true))
             {
                 var type = ParseType();
-                return new PointerType(type);
+                return new PointerType(type!);
+            }
+            else if (optional)
+            {
+                return null;
             } else
             {
                 throw new ParserError("Expected a type");
@@ -327,6 +371,8 @@ namespace GoPowered.Lang.Parser
                 return ESTBoolean.TRUE;
             else if (Now([(null, Keyword.FALSE.ToToken())], true))
                 return ESTBoolean.FALSE;
+            else if (Now([(null, Keyword.NIL.ToToken())], true))
+                return ESTNil.INSTANCE;
             else if (optional)
                 return null;
             else throw new ParserError("Expected a singular expression");
