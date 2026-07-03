@@ -197,7 +197,7 @@ namespace GoPowered.Lang.Parser
                 var fName = Consume<LTLiteral>().Value;
                 var fType = ParseType();
 
-                Struct.Fields[fName] = fType;
+                Struct.Fields[fName] = fType!;
             }
 
             return Struct;
@@ -393,7 +393,7 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.DEFER.ToToken())], true))
             {
                 var expr = ParseExpression();
-                if (expr.Parts == null || !(expr.Parts[expr.Parts.Count - 1] is EPCall))
+                if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
                     throw new ParserError("Expected a function call after 'defer'");
 
                 return new StmtDefer(expr);
@@ -401,7 +401,7 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.GO.ToToken())], true))
             {
                 var expr = ParseExpression();
-                if (expr.Parts == null || !(expr.Parts[expr.Parts.Count - 1] is EPCall))
+                if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
                     throw new ParserError("Expected a function call after 'go'");
 
                 return new StmtGo(expr);
