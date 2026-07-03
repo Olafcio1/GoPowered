@@ -525,6 +525,29 @@ namespace GoPowered.Lang.Parser
 
                     parts.Add(new EPCall(args));
                     continue;
+                }
+                else if (Now([(null, Operator.LCurly.ToToken())], true))
+                {
+                    var fields = new Dictionary<string, Expression>();
+                    var comma = false;
+
+                    while (true)
+                    {
+                        if (Now([(null, Operator.RCurly.ToToken())], true))
+                            break;
+                        else if (comma)
+                            Require(Operator.Comma.ToToken(), "','");
+                        else comma = true;
+
+                        var name = Consume<LTLiteral>().Value;
+                        Require(Operator.Colon.ToToken(), "':'");
+                        var value = ParseExpression();
+
+                        fields[name] = value;
+                    }
+
+                    parts.Add(new EPNew(fields));
+                    continue;
                 } else
                 {
                     break;

@@ -58,6 +58,7 @@ namespace GoPowered.Lang.Lexer.Token
         // Miscellaneous
         [Description("_")] Underscore,
         [Description(":=")] Assign,
+        [Description(":")] Colon,
         [Description(";")] Semicolon,
         [Description(",")] Comma,
         [Description(".")] Dot
