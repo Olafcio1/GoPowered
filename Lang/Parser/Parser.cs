@@ -152,10 +152,33 @@ namespace GoPowered.Lang.Parser
             else throw new ParserError("Expected a struct, interface, type alias or type clone");
         }
 
-        protected IParserToken ParseTypeStruct(string name)
+        protected PTTypeStruct ParseTypeStruct(string name)
         {
-            // TODO
-            throw new ParserError("Not Implemented Yet");
+            Require(Operator.LCurly.ToToken(), "'{'");
+
+            var Struct = new PTTypeStruct(name, [], []);
+
+            while (true)
+            {
+                ConsumeNewlines();
+
+                if (Now([(null, Operator.RCurly.ToToken())], true))
+                    break;
+
+                if (Now([("literal", null), ("newline", null)], false))
+                {
+                    // Struct Inherit
+                    Struct.Inherits.Add(Consume<LTLiteral>().Value);
+                    continue;
+                }
+
+                var fName = Consume<LTLiteral>().Value;
+                var fType = ParseType();
+
+                Struct.Fields[fName] = fType;
+            }
+
+            return Struct;
         }
 
         protected PTTypeInterface ParseTypeInterface(string name)
