@@ -66,6 +66,8 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("uint16")] UINT16,
         [Description("uint8")] UINT8,
         [Description("float")] FLOAT,
+        [Description("float64")] FLOAT64,
+        [Description("float32")] FLOAT32,
         [Description("map")] MAP,
         [Description("error")] ERROR,
     }

@@ -17,6 +17,8 @@
         public static readonly PrimitiveType UINT16 = new(Primitive.UINT16);
         public static readonly PrimitiveType UINT8 = new(Primitive.UINT8);
         public static readonly PrimitiveType FLOAT = new(Primitive.FLOAT);
+        public static readonly PrimitiveType FLOAT64 = new(Primitive.FLOAT64);
+        public static readonly PrimitiveType FLOAT32 = new(Primitive.FLOAT32);
         public static readonly PrimitiveType ERROR = new(Primitive.ERROR);
 
         internal PrimitiveType(Primitive primitive)
@@ -40,6 +42,8 @@
         UINT16,
         UINT8,
         FLOAT,
+        FLOAT64,
+        FLOAT32,
         ERROR,
     }
 }

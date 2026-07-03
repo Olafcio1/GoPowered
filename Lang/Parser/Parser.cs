@@ -303,6 +303,14 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.FLOAT;
             }
+            else if (Now([(null, Keyword.FLOAT64.ToToken())], true))
+            {
+                return PrimitiveType.FLOAT64;
+            }
+            else if (Now([(null, Keyword.FLOAT32.ToToken())], true))
+            {
+                return PrimitiveType.FLOAT32;
+            }
             else if (Now([(null, Keyword.MAP.ToToken())], true))
             {
                 Require(Operator.LSquare.ToToken(), "'['");
