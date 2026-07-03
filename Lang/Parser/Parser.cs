@@ -63,10 +63,32 @@ namespace GoPowered.Lang.Parser
         {
             Require(Keyword.FUNCTION.ToToken(), "'func'");
 
+            MethodParent? parent = null;
+
+            if (Now([(null, Operator.LParen.ToToken())], true))
+            {
+                var assign = (Peek(0) is LTLiteral && (Peek(1) is not LTOperator op || op.Value != Operator.RParen))
+                                ? Consume<LTLiteral>().Value
+                                : null;
+
+                var type = ParseType();
+
+                if (type is PointerType pointer) {
+                    if (pointer.Type is not UniqueType)
+                        throw new ParserError("A method's parent must be a struct or a pointer to a struct");
+                } else if (type is not UniqueType) {
+                    throw new ParserError("A method's parent must be a struct or a pointer to a struct");
+                }
+
+                parent = new MethodParent(assign, type);
+
+                Require(Operator.RParen.ToToken(), "')'");
+            }
+
             ParseFunctionSignature(out var name, out var args, out var returns);
 
             var body = ParseCode();
-            return new PTFunction(name, args, body, returns);
+            return new PTFunction(name, args, body, returns, parent);
         }
 
         protected void ParseFunctionSignature(out string name, out List<Argument> args, out List<ReturnValue>? returns)
