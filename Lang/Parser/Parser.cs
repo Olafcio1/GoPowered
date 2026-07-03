@@ -545,6 +545,17 @@ namespace GoPowered.Lang.Parser
                 var literal = Consume<LTLiteral>().Value;
                 return new ETReference(literal);
             }
+            else if (Now([("keyword", null)], false) && IsCastableType(((LTKeyword)Peek(0)).Value))
+            {
+                var name = Consume<LTKeyword>().Value.GetType().Name;
+                Console.WriteLine(name);
+
+                Require(Operator.LParen.ToToken(), "'('");
+                var value = ParseExpression();
+                Require(Operator.RParen.ToToken(), "')'");
+
+                return new ETCast(name, value);
+            }
             else if (Now([(null, Operator.LParen.ToToken())], true))
             {
                 var expr = ParsePartExpression();
@@ -555,6 +566,23 @@ namespace GoPowered.Lang.Parser
                 // Should this error message be 'Expected an expression' instead?
                 throw new ParserError("Expected expression target");
             }
+        }
+
+        protected static bool IsCastableType(Keyword kw)
+        {
+            return (kw == Keyword.INT ||
+                    kw == Keyword.INT64 ||
+                    kw == Keyword.INT32 ||
+                    kw == Keyword.INT16 ||
+                    kw == Keyword.INT8 ||
+                    kw == Keyword.UINT ||
+                    kw == Keyword.UINT64 ||
+                    kw == Keyword.UINT32 ||
+                    kw == Keyword.UINT16 ||
+                    kw == Keyword.UINT8 ||
+                    kw == Keyword.FLOAT ||
+                    kw == Keyword.FLOAT64 ||
+                    kw == Keyword.FLOAT32);
         }
 
         protected void CollectImports()
