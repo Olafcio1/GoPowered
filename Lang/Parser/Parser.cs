@@ -365,15 +365,22 @@ namespace GoPowered.Lang.Parser
                 Require(Operator.Assign.ToToken(), "':='");
                 var value = ParseExpression();
 
-                return new StmtAssign(name, value);
+                return new StmtAssign(name, value, null);
             }
             else if (Now([(null, Keyword.VARIABLE.ToToken())], true))
             {
                 var name = Consume<LTLiteral>().Value;
-                Require(Operator.Set.ToToken(), "'='");
-                var value = ParseExpression();
 
-                return new StmtAssign(name, value);
+                Expression? value = null;
+                IType? type = null;
+
+                if (!Now([(null, Operator.Set.ToToken())], false))
+                    type = ParseType();
+
+                if (Now([(null, Operator.Set.ToToken())], true))
+                    value = ParseExpression();
+
+                return new StmtAssign(name, value, type);
             }
             else if (Now([(null, Keyword.CONST.ToToken())], true))
             {
