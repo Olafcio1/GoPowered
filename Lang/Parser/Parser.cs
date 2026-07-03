@@ -48,6 +48,8 @@ namespace GoPowered.Lang.Parser
                     continue;
                 else if (Now([(null, Keyword.TYPE.ToToken())]))
                     output.Add(ParseTypeDef());
+                else if (Now([(null, Keyword.VARIABLE.ToToken())]) || Now([(null, Keyword.CONST.ToToken())]))
+                    output.Add(ParseStatement());
                 else
                     throw new ParserError("Expected a global statement");
             }
