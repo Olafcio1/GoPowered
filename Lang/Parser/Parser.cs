@@ -6,11 +6,11 @@ using GoPowered.Lang.Parser.Token.Expr;
 using GoPowered.Lang.Parser.Token.Expr.Part;
 using GoPowered.Lang.Parser.Token.Expr.Target;
 using GoPowered.Lang.Parser.Token.Expr.Target.Single;
+using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Token.Statement.Implementation;
 using GoPowered.Lang.Parser.Type;
 using GoPowered.Lang.Parser.Type.Go;
-using System.Net;
 
 namespace GoPowered.Lang.Parser
 {
@@ -63,8 +63,16 @@ namespace GoPowered.Lang.Parser
         {
             Require(Keyword.FUNCTION.ToToken(), "'func'");
 
-            var name = Consume<LTLiteral>().Value;
-            var args = new List<Argument>();
+            ParseFunctionSignature(out var name, out var args, out var returns);
+
+            var body = ParseCode();
+            return new PTFunction(name, args, body, returns);
+        }
+
+        protected void ParseFunctionSignature(out string name, out List<Argument> args, out List<ReturnValue>? returns)
+        {
+            name = Consume<LTLiteral>().Value;
+            args = new List<Argument>();
 
             Require(Operator.LParen.ToToken(), "'('");
 
@@ -94,7 +102,7 @@ namespace GoPowered.Lang.Parser
                 if (arg.Type == null)
                     throw new ParserError("Missing inherited parameter type");
 
-            List<ReturnValue>? returns = null;
+            returns = null;
 
             if (!Now([(null, Operator.LCurly.ToToken())], false))
             {
@@ -125,9 +133,6 @@ namespace GoPowered.Lang.Parser
                     ));
                 }
             }
-
-            var body = ParseCode();
-            return new PTFunction(name, args, body, returns);
         }
 
         protected IParserToken ParseTypeDef()
@@ -153,10 +158,31 @@ namespace GoPowered.Lang.Parser
             throw new ParserError("Not Implemented Yet");
         }
 
-        protected IParserToken ParseTypeInterface(string name)
+        protected PTTypeInterface ParseTypeInterface(string name)
         {
-            // TODO
-            throw new ParserError("Not Implemented Yet");
+            Require(Operator.LCurly.ToToken(), "'{'");
+
+            var Interface = new PTTypeInterface(name, [], []);
+
+            while (true)
+            {
+                ConsumeNewlines();
+
+                if (Now([(null, Operator.RCurly.ToToken())], true))
+                    break;
+
+                if (!Now([("literal", null), (null, Operator.LParen.ToToken())], false))
+                {
+                    // Interface Inherit
+                    Interface.Inherits.Add(Consume<LTLiteral>().Value);
+                    continue;
+                }
+
+                ParseFunctionSignature(out var fName, out var fArgs, out var fReturns);
+                Interface.Methods.Add(new FunctionSignature(fName, fArgs, fReturns));
+            }
+
+            return Interface;
         }
 
         protected bool ParseType_out(out IType? type, bool optional)
