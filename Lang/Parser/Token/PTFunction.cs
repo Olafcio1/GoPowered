@@ -10,10 +10,14 @@ namespace GoPowered.Lang.Parser.Token
         List<ReturnValue>? Returns
     ) : IParserToken;
 
-    public record Argument(
+    public class Argument(
         string Name,
         IType Type
-    );
+    )
+    {
+        public string Name = Name;
+        public IType Type = Type;
+    }
 
     public record ReturnValue(
         string? Name,

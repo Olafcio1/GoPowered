@@ -77,13 +77,22 @@ namespace GoPowered.Lang.Parser
                     Require(Operator.Comma.ToToken(), "','");
 
                 var aName = Consume<LTLiteral>().Value;
-                var aType = ParseType();
+                var aType = ParseType(true);
+
+                if (aType != null)
+                    foreach (var arg in args)
+                        if (arg.Type == null)
+                            arg.Type = aType;
 
                 args.Add(new Argument(
                     aName,
                     aType!
                 ));
             }
+
+            foreach (var arg in args)
+                if (arg.Type == null)
+                    throw new ParserError("Missing inherited parameter type");
 
             List<ReturnValue>? returns = null;
 
