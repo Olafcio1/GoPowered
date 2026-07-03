@@ -496,6 +496,8 @@ namespace GoPowered.Lang.Parser
             var target = ParseExpressionTarget();
             var parts = new List<IExpressionPart>();
 
+            List<IType>? generics = null;
+
             while (true)
             {
                 if (Now([(null, Operator.Dot.ToToken())], true))
@@ -504,7 +506,78 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LSquare.ToToken())], true))
                 {
-                    parts.Add(new EPAccess(ParseExpression()));
+                    Expression expr;
+
+                    var ind = this.index;
+
+                    try
+                    {
+                        expr = ParseExpression();
+                    } catch (ParserError)
+                    {
+                        var failing = this.index;
+                        this.index = ind;
+
+                        var type = ParseType(true) ??
+                                   throw new ParserError("Expected expression (map/list access) or type (secondary parameters)");
+
+                        var orig = generics;
+                        var point = this.index;
+                        var repeated = (generics != null);
+
+                        generics = [type];
+
+                        while (true)
+                        {
+                            if (Now([(null, Operator.RSquare.ToToken())], true))
+                                break;
+                            else Require(Operator.Comma.ToToken(), "','");
+
+                            generics.Add(ParseType()!);
+                        }
+
+                        if (!Now([(null, Operator.LCurly.ToToken())], false))
+                        {
+                            generics = orig;
+                            this.index = failing;
+                            throw;
+                        }
+
+                        if (repeated)
+                        {
+                            this.index = point;
+                            throw new ParserError("Type parameters have already been provided");
+                        }
+
+                        continue;
+                    }
+
+                    if (Peek(1) is LTOperator op && op.Value == Operator.LCurly)
+                    {
+                        this.index = ind;
+
+                        if (generics != null)
+                            throw new ParserError("Type parameters have already been provided");
+
+                        generics = [];
+
+                        var comma = false;
+
+                        while (true)
+                        {
+                            if (Now([(null, Operator.RSquare.ToToken())], true))
+                                break;
+                            else if (comma)
+                                Require(Operator.Comma.ToToken(), "','");
+                            else comma = true;
+
+                            generics.Add(ParseType()!);
+                        }
+
+                        continue;
+                    }
+
+                    parts.Add(new EPAccess(expr));
                     Require(Operator.RSquare.ToToken(), "']'");
                 }
                 else if (Now([(null, Operator.LParen.ToToken())], true))
@@ -546,7 +619,9 @@ namespace GoPowered.Lang.Parser
                         fields[name] = value;
                     }
 
-                    parts.Add(new EPNew(fields));
+                    parts.Add(new EPNew(fields, generics));
+                    generics = null;
+
                     continue;
                 } else
                 {
