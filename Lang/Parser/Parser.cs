@@ -570,7 +570,7 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([("keyword", null)], false) && IsCastableType(((LTKeyword)Peek(0)).Value))
             {
-                var name = Consume<LTKeyword>().Value.GetType().Name;
+                var name = Consume<LTKeyword>().Value.ToString().ToLower();
                 Console.WriteLine(name);
 
                 Require(Operator.LParen.ToToken(), "'('");
