@@ -194,10 +194,17 @@ namespace GoPowered.Lang.Parser
                     continue;
                 }
 
-                var fName = Consume<LTLiteral>().Value;
+                var fNames = new List<string>();
+
+                do
+                {
+                    fNames.Add(Consume<LTLiteral>().Value);
+                } while (Now([(null, Operator.Comma.ToToken())], true));
+
                 var fType = ParseType();
 
-                Struct.Fields[fName] = fType!;
+                foreach (var fName in fNames)
+                    Struct.Fields[fName] = fType!;
             }
 
             return Struct;
