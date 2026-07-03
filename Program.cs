@@ -52,19 +52,35 @@ namespace GoPowered {
             } else
             {
                 var type = value.GetType();
+                var fields = type.GetFields();
                 var properties = type.GetProperties();
+
+                var allValues = new List<TypeValue>();
+                if (properties.Length == 0)
+                {
+                    if (value is not Enum)
+                        foreach (var f in fields)
+                            if (f.GetType() != type)
+                                allValues.Add(new TypeValue(f.Name, f.GetValue(value)));
+
+                    if (allValues.Count == 0)
+                        return type.Name + objAdditional + "(" + value.ToString() + ")";
+                }
+                else
+                    foreach (var f in properties)
+                        allValues.Add(new TypeValue(f.Name, f.GetValue(value)));
 
                 var tab1x = tab1;
                 var tab2x = tab2;
 
-                if (properties.Any(prop => prop.GetValue(value) is IEnumerable))
+                if (allValues.Any(prop => prop.Value is IEnumerable))
                     tab1x += "  ";
 
                 var repr = type.Name + objAdditional + "{";
                 var index = 0;
-                foreach (var f in properties)
+                foreach (var f in allValues)
                 {
-                    var val = f.GetValue(value);
+                    var val = f.Value;
 
                     if (val == null)
                     {
@@ -81,7 +97,7 @@ namespace GoPowered {
                         repr += Repr(val, tab1: tab1x, tab2: tab2x, objAdditional: "=");
                     }
 
-                    if (++index != properties.Length)
+                    if (++index != allValues.Count)
                         repr += (", ");
                 }
 
@@ -90,4 +106,6 @@ namespace GoPowered {
             }
         }
     }
+
+    internal record TypeValue(string Name, object? Value);
 }
