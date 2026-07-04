@@ -27,10 +27,10 @@ namespace GoPowered.Lang.Lexer.Token
         // Comparison
         [Description("==")] EqualTo,
         [Description("!=")] NotEqual,
-        [Description(">")] GreaterThan,
-        [Description("<")] LessThan,
         [Description(">=")] GreaterOrEqual,
         [Description("<=")] LessOrEqual,
+        [Description(">")] GreaterThan,
+        [Description("<")] LessThan,
         // Logical
         [Description("&&")] LAnd,
         [Description("||")] LOr,
