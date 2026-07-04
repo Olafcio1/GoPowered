@@ -821,9 +821,9 @@ namespace GoPowered.Lang.Parser
             if (logicNeg && mathNeg)
                 throw new ParserError("A logical and math negation cannot be used together");
 
-            if ((target = ParseSingularExpression(optional: !constant)) != null)
+            if ((target = ParseSingularExpression(optional: true)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
-            else expr = ParsePartExpression(allowInit: allowInit);
+            else expr = ParsePartExpression(allowInit: allowInit, constant: constant);
 
                  if (logicNeg) expr = new LNegate(expr);
             else if (mathNeg)  expr = new MNegate(expr);
@@ -968,10 +968,10 @@ namespace GoPowered.Lang.Parser
         /**
          * I also like to call it the `friendly expression`, as it's friendly to [expression] parts
          */
-        protected Expression ParsePartExpression(bool allowInit = true)
+        protected Expression ParsePartExpression(bool allowInit = true, bool constant = false)
         {
             var pointers = CountPointers();
-            var target = ParseExpressionTarget();
+            var target = ParseExpressionTarget(allowInit: allowInit, constant: constant);
             var parts = new List<IExpressionPart>();
 
             List<IType>? generics = null;
@@ -982,7 +982,7 @@ namespace GoPowered.Lang.Parser
                 {
                     parts.Add(new EPMember(Consume<LTLiteral>().Value));
                 }
-                else if (Now([(null, Operator.LSquare.ToToken())], true))
+                else if (!constant && Now([(null, Operator.LSquare.ToToken())], true))
                 {
                     if (Now([(null, Operator.Colon.ToToken())], true))
                     {
@@ -1087,7 +1087,7 @@ namespace GoPowered.Lang.Parser
 
                     Require(Operator.RSquare.ToToken(), "']'");
                 }
-                else if (Now([(null, Operator.LParen.ToToken())], true))
+                else if (!constant && Now([(null, Operator.LParen.ToToken())], true))
                 {
                     var args = new List<Parameter>();
                     var comma = false;
@@ -1111,7 +1111,7 @@ namespace GoPowered.Lang.Parser
                     parts.Add(new EPCall(args));
                     continue;
                 }
-                else if (allowInit && Now([(null, Operator.LCurly.ToToken())], true))
+                else if (allowInit && !constant && Now([(null, Operator.LCurly.ToToken())], true))
                 {
                     var positional = new List<IAnyExpression>();
                     var keyword = new Dictionary<string, IAnyExpression>();
@@ -1169,7 +1169,7 @@ namespace GoPowered.Lang.Parser
             );
         }
 
-        protected IExpressionTarget ParseExpressionTarget()
+        protected IExpressionTarget ParseExpressionTarget(bool allowInit = true, bool constant = false)
         {
             if (Now([("literal", null)], false))
             {
@@ -1182,14 +1182,14 @@ namespace GoPowered.Lang.Parser
                 //Console.WriteLine(name);
 
                 Require(Operator.LParen.ToToken(), "'('");
-                var value = ParseExpression();
+                var value = ParseExpression(allowInit: allowInit, constant: constant);
                 Require(Operator.RParen.ToToken(), "')'");
 
                 return new ETCast(name, value);
             }
             else if (Now([(null, Operator.LParen.ToToken())], true))
             {
-                var expr = ParseExpression();
+                var expr = ParseExpression(allowInit: allowInit, constant: constant);
                 Require(Operator.RParen.ToToken(), "')'");
                 return new ETNest(expr);
             }
@@ -1207,7 +1207,7 @@ namespace GoPowered.Lang.Parser
 
                     Require(Operator.Comma.ToToken(), "','");
 
-                    args.Add(ParseExpression());
+                    args.Add(ParseExpression(allowInit: allowInit, constant: constant));
                 }
 
                 return new ETMake(type, args);
