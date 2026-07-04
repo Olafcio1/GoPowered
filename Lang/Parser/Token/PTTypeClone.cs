@@ -4,6 +4,7 @@ namespace GoPowered.Lang.Parser.Token
 {
     public record PTTypeClone(
         string Name,
-        IType Type
+        IType Type,
+        Dictionary<string, IType>? Generics
     ) : IParserToken;
 }

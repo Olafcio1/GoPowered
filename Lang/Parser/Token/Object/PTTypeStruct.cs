@@ -5,6 +5,7 @@ namespace GoPowered.Lang.Parser.Token.Object
     public record PTTypeStruct(
         string Name,
         Dictionary<string, IType> Fields,
-        List<string> Inherits
+        List<string> Inherits,
+        Dictionary<string, IType>? Generics
     ) : IParserToken;
 }

@@ -167,22 +167,48 @@ namespace GoPowered.Lang.Parser
 
             var name = Consume<LTLiteral>().Value;
 
-            if (Now([(null, Keyword.STRUCT.ToToken())], true))
-                return ParseTypeStruct(name);
-            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
-                return ParseTypeInterface(name);
-            else if (ParseType_out(out IType? type, optional: true))
-                return new PTTypeClone(name, type!);
-            else if (Now([(null, Operator.Set.ToToken())], true))
+            if (Now([(null, Operator.Set.ToToken())], true))
                 return new PTTypeAlias(name, ParseType()!);
+
+            Dictionary<string, IType>? generics = null;
+
+            if (Now([(null, Operator.LSquare.ToToken())], true))
+            {
+                generics = [];
+
+                var comma = false;
+
+                while (true)
+                {
+                    if (Now([(null, Operator.RSquare.ToToken())], true))
+                        break;
+                    else if (!comma)
+                        comma = true;
+                    else Require(Operator.Comma.ToToken(), "','");
+
+                    var aName = Consume<LTLiteral>().Value;
+                    var aParent = ParseType()!;
+
+                    generics[aName] = aParent;
+                }
+            }
+
+            if (Now([(null, Keyword.STRUCT.ToToken())], true))
+                return ParseTypeStruct(name, generics);
+            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+                return ParseTypeInterface(name, generics);
+            else if (ParseType_out(out IType? type, optional: true))
+                return new PTTypeClone(name, type!, generics);
+            else if (Now([(null, Operator.Set.ToToken())], true))
+                throw new ParserError("A type alias cannot use generics");
             else throw new ParserError("Expected a struct, interface, type alias or type clone");
         }
 
-        protected PTTypeStruct ParseTypeStruct(string name)
+        protected PTTypeStruct ParseTypeStruct(string name, Dictionary<string, IType>? generics)
         {
             Require(Operator.LCurly.ToToken(), "'{'");
 
-            var Struct = new PTTypeStruct(name, [], []);
+            var Struct = new PTTypeStruct(name, [], [], generics);
 
             while (true)
             {
@@ -214,11 +240,11 @@ namespace GoPowered.Lang.Parser
             return Struct;
         }
 
-        protected PTTypeInterface ParseTypeInterface(string name)
+        protected PTTypeInterface ParseTypeInterface(string name, Dictionary<string, IType>? generics)
         {
             Require(Operator.LCurly.ToToken(), "'{'");
 
-            var Interface = new PTTypeInterface(name, [], []);
+            var Interface = new PTTypeInterface(name, [], [], generics);
 
             while (true)
             {
