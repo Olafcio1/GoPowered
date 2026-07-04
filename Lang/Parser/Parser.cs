@@ -952,7 +952,7 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LParen.ToToken())], true))
                 {
-                    var args = new List<IAnyExpression>();
+                    var args = new List<Parameter>();
                     var comma = false;
 
                     while (true)
@@ -963,7 +963,10 @@ namespace GoPowered.Lang.Parser
                             Require(Operator.Comma.ToToken(), "','");
                         else comma = true;
 
-                        args.Add(ParseExpression());
+                        var value = ParseExpression();
+                        var ellipsis = Now([(null, Operator.Ellipsis.ToToken())], true);
+
+                        args.Add(new Parameter(value, ellipsis));
                     }
 
                     parts.Add(new EPCall(args));
