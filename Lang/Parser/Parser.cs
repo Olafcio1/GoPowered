@@ -1146,7 +1146,7 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Operator.LParen.ToToken())], true))
             {
-                var expr = ParsePartExpression();
+                var expr = ParseExpression();
                 Require(Operator.RParen.ToToken(), "')'");
                 return new ETNest(expr);
             }
