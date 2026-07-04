@@ -301,7 +301,16 @@ namespace GoPowered.Lang.Parser
 
         protected IType? ParseType(bool optional = false)
         {
-            if (Now([("literal", null)]))
+            if (Now([(null, Operator.LSquare.ToToken())], true))
+            {
+                if (Now([(null, Operator.RSquare.ToToken())], true))
+                    return new ListType(ParseType()!);
+
+                var amount = ParseExpression(allowLogic: false, constant: true);
+                Require(Operator.RSquare.ToToken(), "']'");
+                return new ArrayType(amount, ParseType()!);
+            }
+            else if (Now([("literal", null)]))
             {
                 var location = new List<string>();
 
@@ -398,13 +407,6 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.ERROR.ToToken())], true))
             {
                 return PrimitiveType.ERROR;
-            }
-            else if (Now([(null, Operator.LSquare.ToToken())], true))
-            {
-                Require(Operator.RSquare.ToToken(), "']'");
-
-                var type = ParseType();
-                return new ListType(type!);
             }
             else if (Now([(null, Operator.Star.ToToken())], true))
             {
