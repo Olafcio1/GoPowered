@@ -30,7 +30,7 @@ namespace GoPowered {
 
         static string Repr(object? value, string nl = "\n", string tab1 = "", string tab2 = "  ", string objAdditional = "")
         {
-            if (value is string || value is int || value is short || value is double || value is long || value is float || value is bool)
+            if (value is string || value is char || value is int || value is short || value is double || value is long || value is float || value is bool)
             {
                 return "" + value;
             }

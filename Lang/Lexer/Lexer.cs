@@ -13,6 +13,7 @@ namespace GoPowered.Lang.Lexer
         protected readonly LXLiteral XLiteral;
         protected readonly LXOperator XOperator;
         protected readonly LXString XString;
+        protected readonly LXChar XChar;
         protected readonly LXNumber XNumber;
 
         public Lexer(string input) {
@@ -23,6 +24,7 @@ namespace GoPowered.Lang.Lexer
             this.XLiteral = new LXLiteral(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
             this.XOperator = new LXOperator(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
             this.XString = new LXString(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
+            this.XChar = new LXChar(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
             this.XNumber = new LXNumber(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
         }
 
@@ -41,6 +43,7 @@ namespace GoPowered.Lang.Lexer
                 else if (XOperator.LexOperator());
                 else if (XLiteral.LexLiteral());
                 else if (XString.LexString());
+                else if (XChar.LexChar());
                 else if (Now('\r') || Now('\n'))
                     // Newlines
                     output.Add(LTNewLine.INSTANCE);

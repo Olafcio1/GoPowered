@@ -5,6 +5,7 @@
         public Primitive Primitive { get; }
 
         public static readonly PrimitiveType STRING = new(Primitive.STRING);
+        public static readonly PrimitiveType CHAR = new(Primitive.CHAR);
         public static readonly PrimitiveType BOOL = new(Primitive.BOOL);
         public static readonly PrimitiveType INT = new(Primitive.INT);
         public static readonly PrimitiveType INT64 = new(Primitive.INT64);
@@ -30,6 +31,7 @@
     public enum Primitive
     {
         STRING,
+        CHAR,
         BOOL,
         INT,
         INT64,

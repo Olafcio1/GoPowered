@@ -258,6 +258,10 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.STRING;
             }
+            else if (Now([(null, Keyword.CHAR.ToToken())], true))
+            {
+                return PrimitiveType.CHAR;
+            }
             else if (Now([(null, Keyword.BOOL.ToToken())], true))
             {
                 return PrimitiveType.BOOL;
@@ -561,6 +565,8 @@ namespace GoPowered.Lang.Parser
         {
             if (Now([("string", null)], false))
                 return new ESTString(Consume<LTString>().Value);
+            else if (Now([("char", null)], false))
+                return new ESTChar(Consume<LTChar>().Value);
             else if (Now([("integer", null)], false))
                 return new ESTInteger(Consume<LTInteger>().Value);
             else if (Now([("float", null)], false))
@@ -782,7 +788,8 @@ namespace GoPowered.Lang.Parser
 
         protected static bool IsCastableType(Keyword kw)
         {
-            return (kw == Keyword.INT ||
+            return (kw == Keyword.CHAR || 
+                    kw == Keyword.INT ||
                     kw == Keyword.INT64 ||
                     kw == Keyword.INT32 ||
                     kw == Keyword.INT16 ||
