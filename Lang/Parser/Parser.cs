@@ -512,7 +512,7 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.DEFER.ToToken())], true))
             {
                 var expr = ParseObjectExpression();
-                if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
+                if (expr.Parts == null || expr.Parts[^1] is not EPCall)
                     throw new ParserError("Expected a function call after 'defer'");
 
                 return new StmtDefer(expr);
@@ -520,7 +520,7 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.GO.ToToken())], true))
             {
                 var expr = ParseObjectExpression();
-                if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
+                if (expr.Parts == null || expr.Parts[^1] is not EPCall)
                     throw new ParserError("Expected a function call after 'go'");
 
                 return new StmtGo(expr);
@@ -672,7 +672,7 @@ namespace GoPowered.Lang.Parser
                 if (anyexpr is Expression expr)
                 {
                     if (Now([(null, Operator.Set.ToToken())], true))
-                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[expr.Parts.Count - 1] is EPCall)
+                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '='");
                         else return new StmtSet(expr, ParseExpression());
                     else if (expr.Singular || expr.Parts!.Count == 0)
