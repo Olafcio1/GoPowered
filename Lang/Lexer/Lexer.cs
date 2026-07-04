@@ -39,7 +39,8 @@ namespace GoPowered.Lang.Lexer
                     while (Consume() != '\n');
                 else if (Now("/*"))
                     // Multiline comments
-                    while (!Now("*/"));
+                    while (!Now("*/"))
+                        Consume();
                 else if (XOperator.LexOperator());
                 else if (XLiteral.LexLiteral());
                 else if (XString.LexString());
