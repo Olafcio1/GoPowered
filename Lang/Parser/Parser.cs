@@ -706,10 +706,36 @@ namespace GoPowered.Lang.Parser
                     //Console.WriteLine(expr);
                     //Console.WriteLine(expr.Parts.Count);
                     if (Now([(null, Operator.Set.ToToken())], true))
+                    {
                         if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '='");
                         else return new StmtSet(expr, ParseExpression());
-                    else if (expr.Singular || expr.Parts!.Count == 0)
+                    }
+                    else
+                    {
+                        var operations = new Dictionary<Operator, MathMember.TypeEnum>
+                        {
+                            [Operator.AddSet] = MathMember.TypeEnum.Add,
+                            [Operator.SubtractSet] = MathMember.TypeEnum.Subtract,
+                            [Operator.MultiplySet] = MathMember.TypeEnum.Multiply,
+                            [Operator.DivideSet] = MathMember.TypeEnum.Divide,
+                            [Operator.ModulusSet] = MathMember.TypeEnum.Modulus
+                            // TODO Support bitwise
+                            //[Operator.BAndSet] = MathMember.TypeEnum.And,
+                        };
+
+                        foreach (var (@operator, operation) in operations)
+                        {
+                            if (Now([(null, @operator.ToToken())], true))
+                            {
+                                if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
+                                    throw new ParserError($"Expected a reference before '{@operator.ToCode()}'");
+                                else return new StmtSet(expr, new MathExpression(expr, [new MathMember(operation, ParseObjectExpression())]));
+                            }
+                        }
+                    }
+
+                    if (expr.Singular || expr.Parts!.Count == 0)
                         throw new ParserError("Expression statement with no parts");
                     else if (expr.Parts[^1] is EPAccess || expr.Parts[^1] is EPMember)
                         throw new ParserError("Expression statement ends with unnecessary element/member access");
