@@ -58,7 +58,7 @@ namespace GoPowered {
                 var allValues = new List<TypeValue>();
                 if (properties.Length == 0)
                 {
-                    if (value is not Enum)
+                    if (value is not Enum && value is not IAvoidSerialization)
                         foreach (var f in fields)
                             if (f.GetType() != type)
                                 allValues.Add(new TypeValue(f.Name, f.GetValue(value)));
