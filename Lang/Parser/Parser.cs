@@ -841,7 +841,27 @@ namespace GoPowered.Lang.Parser
                 var expr = ParsePartExpression();
                 Require(Operator.RParen.ToToken(), "')'");
                 return new ETNest(expr);
-            } else
+            }
+            else if (Now([(null, Keyword.MAKE.ToToken())], true))
+            {
+                Require(Operator.LParen.ToToken(), "'('");
+
+                var type = ParseType()!;
+                var args = new List<IAnyExpression>();
+
+                while (true)
+                {
+                    if (Now([(null, Operator.RParen.ToToken())], true))
+                        break;
+
+                    Require(Operator.Comma.ToToken(), "','");
+
+                    args.Add(ParseExpression());
+                }
+
+                return new ETMake(type, args);
+            }
+            else
             {
                 // Should this error message be 'Expected an expression' instead?
                 throw new ParserError("Expected expression target");
