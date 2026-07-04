@@ -189,7 +189,7 @@ namespace GoPowered.Lang.Parser
             if (Now([(null, Operator.Set.ToToken())], true))
                 return new PTTypeAlias(name, ParseType()!);
 
-            Dictionary<string, IType>? generics = ParseDefGenerics();
+            Dictionary<string, IType>? generics = ParseDefGenerics(hard: false);
 
             if (Now([(null, Keyword.STRUCT.ToToken())], true))
                 return ParseTypeStruct(name, generics);
@@ -202,12 +202,14 @@ namespace GoPowered.Lang.Parser
             else throw new ParserError("Expected a struct, interface, type alias or type clone");
         }
 
-        private Dictionary<string, IType>? ParseDefGenerics()
+        private Dictionary<string, IType>? ParseDefGenerics(bool hard = true)
         {
             Dictionary<string, IType>? generics = null;
 
-            if (Now([(null, Operator.LSquare.ToToken())], true))
+            if (Now([(null, Operator.LSquare.ToToken())], false) && (hard || (!ReachedEOF(3) && (Peek(1) is not LTOperator op || op.Value != Operator.RSquare)
+                                                                                             && (Peek(2) is not LTOperator op2 || op2.Value != Operator.RSquare))))
             {
+                index++;
                 generics = [];
 
                 var comma = false;
