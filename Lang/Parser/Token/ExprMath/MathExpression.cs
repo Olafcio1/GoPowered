@@ -3,7 +3,7 @@
 namespace GoPowered.Lang.Parser.Token.ExprMath
 {
     public record MathExpression(
-        Expression Target,
+        IAnyExpression Target,
         List<MathMember> Members
     ) : IAnyExpression;
 }

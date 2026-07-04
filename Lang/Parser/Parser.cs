@@ -6,6 +6,7 @@ using GoPowered.Lang.Parser.Token.Expr;
 using GoPowered.Lang.Parser.Token.Expr.Part;
 using GoPowered.Lang.Parser.Token.Expr.Target;
 using GoPowered.Lang.Parser.Token.Expr.Target.Single;
+using GoPowered.Lang.Parser.Token.ExprLogic;
 using GoPowered.Lang.Parser.Token.ExprMath;
 using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Statement;
@@ -641,17 +642,22 @@ namespace GoPowered.Lang.Parser
 
         protected Expression ParseObjectExpression(bool allowInit = true)
         {
-            return (Expression) ParseExpression(allowMath: false, allowInit: allowInit);
+            return (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit);
         }
 
-        protected IAnyExpression ParseExpression(bool allowMath = true, bool allowInit = true)
+        protected IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true)
         {
             IExpressionTarget? target;
-            Expression expr;
+            IAnyExpression expr;
+
+            bool neg = Now([(null, Operator.LNot.ToToken())], true);
 
             if ((target = ParseSingularExpression(optional: true)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
             else expr = ParsePartExpression(allowInit: allowInit);
+
+            if (neg)
+                expr = new Negate(expr);
 
             if (
                     allowMath &&
@@ -696,7 +702,23 @@ namespace GoPowered.Lang.Parser
                     }
                 }
 
-                return math;
+                expr = math;
+            }
+
+            if (allowLogic)
+            {
+                if (Now([(null, Operator.EqualTo.ToToken())], true))
+                    return new Condition(expr, ConditionType.EQUAL, ParseExpression());
+                else if (Now([(null, Operator.NotEqual.ToToken())], true))
+                    return new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression());
+                else if (Now([(null, Operator.GreaterThan.ToToken())], true))
+                    return new Condition(expr, ConditionType.GREATER_THAN, ParseExpression());
+                else if (Now([(null, Operator.GreaterOrEqual.ToToken())], true))
+                    return new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression());
+                else if (Now([(null, Operator.LessThan.ToToken())], true))
+                    return new Condition(expr, ConditionType.LESS_THAN, ParseExpression());
+                else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
+                    return new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression());
             }
 
             return expr;
