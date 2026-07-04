@@ -843,22 +843,27 @@ namespace GoPowered.Lang.Parser
                 {
                     if (Now([(null, Operator.Plus.ToToken())], true))
                     {
+                        ConsumeNewlines();
                         math.Members.Add(new MathMember(MathMember.TypeEnum.Add, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Minus.ToToken())], true))
                     {
+                        ConsumeNewlines();
                         math.Members.Add(new MathMember(MathMember.TypeEnum.Subtract, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Star.ToToken())], true))
                     {
+                        ConsumeNewlines();
                         math.Members.Add(new MathMember(MathMember.TypeEnum.Multiply, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Slash.ToToken())], true))
                     {
+                        ConsumeNewlines();
                         math.Members.Add(new MathMember(MathMember.TypeEnum.Divide, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Modulus.ToToken())], true))
                     {
+                        ConsumeNewlines();
                         math.Members.Add(new MathMember(MathMember.TypeEnum.Modulus, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else
@@ -1090,6 +1095,8 @@ namespace GoPowered.Lang.Parser
                         else if (comma)
                             Require(Operator.Comma.ToToken(), "','");
                         else comma = true;
+
+                        ConsumeNewlines();
 
                         var value = ParseExpression();
                         var ellipsis = Now([(null, Operator.Ellipsis.ToToken())], true);
