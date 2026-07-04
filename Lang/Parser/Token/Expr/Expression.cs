@@ -5,5 +5,5 @@
         List<IExpressionPart>? Parts,
         int Pointers,
         bool Singular = false
-    );
+    ) : IAnyExpression;
 }

@@ -1,9 +1,7 @@
-﻿using GoPowered.Lang.Parser.Token.Expr;
-
-namespace GoPowered.Lang.Parser.Token.Statement.Implementation
+﻿namespace GoPowered.Lang.Parser.Token.Statement.Implementation
 {
     /**
      * Used to evaluate an effective expression.
      */
-    public record StmtExpression(Expression Expr) : IStatement;
+    public record StmtExpression(IAnyExpression Expr) : IStatement;
 }

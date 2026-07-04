@@ -6,6 +6,7 @@ using GoPowered.Lang.Parser.Token.Expr;
 using GoPowered.Lang.Parser.Token.Expr.Part;
 using GoPowered.Lang.Parser.Token.Expr.Target;
 using GoPowered.Lang.Parser.Token.Expr.Target.Single;
+using GoPowered.Lang.Parser.Token.ExprMath;
 using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Token.Statement.Implementation;
@@ -388,7 +389,7 @@ namespace GoPowered.Lang.Parser
             {
                 var name = Consume<LTLiteral>().Value;
 
-                Expression? value = null;
+                IAnyExpression? value = null;
                 IType? type = null;
 
                 if (!Now([(null, Operator.Set.ToToken())], false))
@@ -409,7 +410,7 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Keyword.DEFER.ToToken())], true))
             {
-                var expr = ParseExpression();
+                var expr = ParseObjectExpression();
                 if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
                     throw new ParserError("Expected a function call after 'defer'");
 
@@ -417,7 +418,7 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Keyword.GO.ToToken())], true))
             {
-                var expr = ParseExpression();
+                var expr = ParseObjectExpression();
                 if (expr.Parts == null || expr.Parts[expr.Parts.Count - 1] is not EPCall)
                     throw new ParserError("Expected a function call after 'go'");
 
@@ -431,7 +432,7 @@ namespace GoPowered.Lang.Parser
                 }
                 else
                 {
-                    var values = new List<Expression>();
+                    var values = new List<IAnyExpression>();
 
                     do
                     {
@@ -444,27 +445,89 @@ namespace GoPowered.Lang.Parser
             }
             else
             {
-                var expr = ParseExpression();
+                var anyexpr = ParseExpression();
 
-                if (Now([(null, Operator.Set.ToToken())], true))
-                    if (expr.Parts != null && expr.Parts[expr.Parts.Count - 1] is EPCall)
-                        throw new ParserError("Expected a reference before '='");
-                    else return new StmtSet(expr, ParseExpression());
-                else if (expr.Singular || expr.Parts!.Count == 0)
-                    throw new ParserError("Expression statement with no parts");
-                else if (expr.Parts[^1] is EPAccess || expr.Parts[^1] is EPMember)
-                    throw new ParserError("Expression statement ends with unnecessary element/member access");
+                if (anyexpr is Expression expr)
+                {
+                    if (Now([(null, Operator.Set.ToToken())], true))
+                        if (expr.Parts != null && expr.Parts[expr.Parts.Count - 1] is EPCall)
+                            throw new ParserError("Expected a reference before '='");
+                        else return new StmtSet(expr, ParseExpression());
+                    else if (expr.Singular || expr.Parts!.Count == 0)
+                        throw new ParserError("Expression statement with no parts");
+                    else if (expr.Parts[^1] is EPAccess || expr.Parts[^1] is EPMember)
+                        throw new ParserError("Expression statement ends with unnecessary element/member access");
 
-                return new StmtExpression(expr);
+                    return new StmtExpression(expr);
+                }
+                else
+                {
+                    throw new ParserError("A math expression cannot be used as a statement");
+                }
             }
         }
 
-        protected Expression ParseExpression()
+        protected Expression ParseObjectExpression()
+        {
+            return (Expression) ParseExpression(allowMath: false);
+        }
+
+        protected IAnyExpression ParseExpression(bool allowMath = true)
         {
             IExpressionTarget? target;
+            Expression expr;
+
             if ((target = ParseSingularExpression(optional: true)) != null)
-                return new Expression(target, null, 0, Singular: true);
-            else return ParsePartExpression();
+                expr = new Expression(target, null, 0, Singular: true);
+            else expr = ParsePartExpression();
+
+            if (
+                    allowMath &&
+                    Peek(0) is LTOperator op &&
+                    (
+                            op.Value == Operator.Plus ||
+                            op.Value == Operator.Minus ||
+                            op.Value == Operator.Star ||
+                            op.Value == Operator.Slash ||
+                            op.Value == Operator.Modulus
+                            //op.Value == Operator.Exponentiate
+                    )
+            )
+            {
+                var math = new MathExpression(expr, []);
+
+                while (true)
+                {
+                    if (Now([(null, Operator.Plus.ToToken())], true))
+                    {
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Add, (Expression) ParseExpression(allowMath: false)));
+                    }
+                    else if (Now([(null, Operator.Minus.ToToken())], true))
+                    {
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Subtract, (Expression) ParseExpression(allowMath: false)));
+                    }
+                    else if (Now([(null, Operator.Star.ToToken())], true))
+                    {
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Multiply, (Expression) ParseExpression(allowMath: false)));
+                    }
+                    else if (Now([(null, Operator.Slash.ToToken())], true))
+                    {
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Divide, (Expression) ParseExpression(allowMath: false)));
+                    }
+                    else if (Now([(null, Operator.Modulus.ToToken())], true))
+                    {
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Modulus, (Expression) ParseExpression(allowMath: false)));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                return math;
+            }
+
+            return expr;
         }
 
         protected IExpressionTarget? ParseSingularExpression(bool optional = false)
@@ -519,7 +582,7 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LSquare.ToToken())], true))
                 {
-                    Expression expr;
+                    IAnyExpression expr;
 
                     var ind = this.index;
 
@@ -595,7 +658,7 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LParen.ToToken())], true))
                 {
-                    var args = new List<Expression>();
+                    var args = new List<IAnyExpression>();
                     var comma = false;
 
                     while (true)
@@ -614,8 +677,8 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LCurly.ToToken())], true))
                 {
-                    var positional = new List<Expression>();
-                    var keyword = new Dictionary<string, Expression>();
+                    var positional = new List<IAnyExpression>();
+                    var keyword = new Dictionary<string, IAnyExpression>();
 
                     var comma = false;
 
