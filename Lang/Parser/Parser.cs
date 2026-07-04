@@ -158,7 +158,7 @@ namespace GoPowered.Lang.Parser
                     do
                     {
                         string? rName = null;
-                        if (Peek(0).Type() == "literal" && !Peek(1).Equals(Operator.RParen.ToToken()))
+                        if (Peek(0).Type() == "literal" && !Peek(1).Equals(Operator.Comma.ToToken()) && !Peek(1).Equals(Operator.RParen.ToToken()))
                             rName = Consume<LTLiteral>().Value;
 
                         var rType = ParseType();
@@ -416,6 +416,10 @@ namespace GoPowered.Lang.Parser
                 return null;
             } else
             {
+                //Console.WriteLine(Peek(-1));
+                //Console.WriteLine(Peek(0));
+                //Console.WriteLine(Peek(1));
+                //Console.WriteLine(Peek(2));
                 throw new ParserError("Expected a type");
             }
         }
