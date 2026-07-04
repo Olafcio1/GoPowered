@@ -768,17 +768,17 @@ namespace GoPowered.Lang.Parser
             if (allowLogic)
             {
                 if (Now([(null, Operator.EqualTo.ToToken())], true))
-                    return new Condition(expr, ConditionType.EQUAL, ParseExpression());
+                    return new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.NotEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression());
+                    return new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.GreaterThan.ToToken())], true))
-                    return new Condition(expr, ConditionType.GREATER_THAN, ParseExpression());
+                    return new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.GreaterOrEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression());
+                    return new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.LessThan.ToToken())], true))
-                    return new Condition(expr, ConditionType.LESS_THAN, ParseExpression());
+                    return new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression());
+                    return new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit));
             }
 
             return expr;
