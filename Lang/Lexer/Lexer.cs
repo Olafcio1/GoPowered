@@ -25,7 +25,7 @@ namespace GoPowered.Lang.Lexer
             this.XOperator = new LXOperator(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
             this.XString = new LXString(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
             this.XChar = new LXChar(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
-            this.XNumber = new LXNumber(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
+            this.XNumber = new LXNumber(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now, IsFirst);
         }
 
         public List<ILexerToken> Lex()
@@ -115,6 +115,11 @@ namespace GoPowered.Lang.Lexer
 
         protected bool ReachedEOF(int further = 0) {
             return index + further >= input.Length;
+        }
+
+        protected bool IsFirst()
+        {
+            return index == 0;
         }
 
         protected void Skip(int count)

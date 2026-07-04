@@ -6,6 +6,9 @@ namespace GoPowered.Lang.Lexer.Composite.Implementation
 {
     public sealed class LXNumber : CLexer
     {
+        internal delegate bool IsFirstT();
+        private IsFirstT IsFirst;
+
         internal LXNumber(PeekT peek,
                            ConsumeCharT consumeChar,
                            ConsumeStringT consumeString,
@@ -13,13 +16,27 @@ namespace GoPowered.Lang.Lexer.Composite.Implementation
                            AddTokenT addToken,
                            ReachedEOFT reachedEOF,
                            NowCharT nowChar,
-                           NowStringT nowString) : base(peek, consumeChar, consumeString, skip, addToken, reachedEOF, nowChar, nowString)
-        {}
+                           NowStringT nowString,
+                           IsFirstT isFirst) : base(peek, consumeChar, consumeString, skip, addToken, reachedEOF, nowChar, nowString)
+        {
+            this.IsFirst = isFirst;
+        }
 
         public bool LexNumber()
         {
-            var vneg = Peek() == '-';
-            var vpos = Peek() == '+';
+            bool vneg;
+            bool vpos;
+
+            if (!IsFirst() && Peek(-1) == ' ')
+            {
+                vneg = Peek() == '-';
+                vpos = Peek() == '+';
+            }
+            else
+            {
+                vneg = false;
+                vpos = false;
+            }
 
             var negindex = (vneg || vpos) ? 1 : 0;
             var negmul = vneg ? -1 : 1;
