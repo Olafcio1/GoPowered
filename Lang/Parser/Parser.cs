@@ -541,7 +541,7 @@ namespace GoPowered.Lang.Parser
             {
                 var name = Consume<LTLiteral>().Value;
                 Require(Operator.Set.ToToken(), "'='");
-                var value = ParseSingularExpression();
+                var value = ParseExpression(constant: true);
 
                 return new StmtConst(name, value!);
             }
@@ -806,7 +806,7 @@ namespace GoPowered.Lang.Parser
             return (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit);
         }
 
-        protected IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true)
+        protected IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false)
         {
             IExpressionTarget? target;
             IAnyExpression expr;
@@ -817,7 +817,7 @@ namespace GoPowered.Lang.Parser
             if (logicNeg && mathNeg)
                 throw new ParserError("A logical and math negation cannot be used together");
 
-            if ((target = ParseSingularExpression(optional: true)) != null)
+            if ((target = ParseSingularExpression(optional: !constant)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
             else expr = ParsePartExpression(allowInit: allowInit);
 
@@ -843,23 +843,23 @@ namespace GoPowered.Lang.Parser
                 {
                     if (Now([(null, Operator.Plus.ToToken())], true))
                     {
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Add, (Expression) ParseExpression(allowMath: false)));
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Add, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Minus.ToToken())], true))
                     {
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Subtract, (Expression) ParseExpression(allowMath: false)));
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Subtract, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Star.ToToken())], true))
                     {
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Multiply, (Expression) ParseExpression(allowMath: false)));
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Multiply, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Slash.ToToken())], true))
                     {
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Divide, (Expression) ParseExpression(allowMath: false)));
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Divide, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else if (Now([(null, Operator.Modulus.ToToken())], true))
                     {
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Modulus, (Expression) ParseExpression(allowMath: false)));
+                        math.Members.Add(new MathMember(MathMember.TypeEnum.Modulus, (Expression) ParseExpression(allowMath: false, constant: constant)));
                     }
                     else
                     {
@@ -875,24 +875,24 @@ namespace GoPowered.Lang.Parser
                 ICondition cond;
 
                 if (Now([(null, Operator.EqualTo.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.NotEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.GreaterThan.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.GreaterOrEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.LessThan.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
                 else goto logicIsNotPresent;
 
-                    if (Now([(null, Operator.LAnd.ToToken())], true))
-                        cond = new LBoth(cond, ParseCondition(allowInit: allowInit));
+                if (Now([(null, Operator.LAnd.ToToken())], true))
+                    cond = new LBoth(cond, ParseCondition(allowInit: allowInit));
 
                 if (Now([(null, Operator.LOr.ToToken())], true))
-                        cond = new LEither(cond, ParseCondition(allowInit: allowInit));
+                    cond = new LEither(cond, ParseCondition(allowInit: allowInit));
 
                 return cond;
 
