@@ -872,7 +872,7 @@ namespace GoPowered.Lang.Parser
 
             if (allowLogic)
             {
-                ICondition cond;
+                ICondition? cond = null;
 
                 if (Now([(null, Operator.EqualTo.ToToken())], true))
                     cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
@@ -886,17 +886,21 @@ namespace GoPowered.Lang.Parser
                     cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
                     cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
-                else goto logicIsNotPresent;
 
                 if (Now([(null, Operator.LAnd.ToToken())], true))
+                {
+                    cond ??= AsCondition(expr);
                     cond = new LBoth(cond, ParseCondition(allowInit: allowInit));
+                }
 
                 if (Now([(null, Operator.LOr.ToToken())], true))
+                {
+                    cond ??= AsCondition(expr);
                     cond = new LEither(cond, ParseCondition(allowInit: allowInit));
+                }
 
-                return cond;
-
-                logicIsNotPresent: {}
+                if (cond != null)
+                    return cond;
             }
 
             return expr;
@@ -907,9 +911,14 @@ namespace GoPowered.Lang.Parser
             var expr = ParseExpression(allowInit: allowInit);
             var cond = expr is Condition cast
                         ? cast
-                        : new Condition(expr, ConditionType.EQUAL, new Expression(ESTBoolean.TRUE, null, 0, Singular: true));
+                        : AsCondition(expr);
 
             return cond;
+        }
+
+        private static Condition AsCondition(IAnyExpression expr)
+        {
+            return new Condition(expr, ConditionType.EQUAL, new Expression(ESTBoolean.TRUE, null, 0, Singular: true));
         }
 
         protected IExpressionTarget? ParseSingularExpression(bool optional = false)
