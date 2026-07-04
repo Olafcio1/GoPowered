@@ -672,7 +672,7 @@ namespace GoPowered.Lang.Parser
                 if (anyexpr is Expression expr)
                 {
                     if (Now([(null, Operator.Set.ToToken())], true))
-                        if (expr.Parts != null && expr.Parts[expr.Parts.Count - 1] is EPCall)
+                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[expr.Parts.Count - 1] is EPCall)
                             throw new ParserError("Expected a reference before '='");
                         else return new StmtSet(expr, ParseExpression());
                     else if (expr.Singular || expr.Parts!.Count == 0)
