@@ -880,17 +880,17 @@ namespace GoPowered.Lang.Parser
                 ICondition? cond = null;
 
                 if (Now([(null, Operator.EqualTo.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.NotEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.GreaterThan.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.GreaterOrEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.LessThan.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
                 else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
-                    cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit, constant: constant));
+                    cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowLogic: false, allowInit: allowInit, constant: constant));
 
                 if (Now([(null, Operator.LAnd.ToToken())], true))
                 {
