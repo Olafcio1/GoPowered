@@ -835,9 +835,36 @@ namespace GoPowered.Lang.Parser
             while (!ReachedEOF())
             {
                 if (Now([(null, Keyword.IMPORT.ToToken())], true))
-                    output.Add(new PTImport(Consume<LTString>().Value));
+                {
+                    if (Now([(null, Operator.LParen.ToToken())], true))
+                    {
+                        bool empty = true;
+
+                        while (true)
+                        {
+                            if (Now([(null, Operator.RParen.ToToken())], true))
+                                break;
+                            else if (Now([("newline", null)], true))
+                                continue;
+
+                            output.Add(new PTImport(Consume<LTString>().Value));
+                            Require(LTNewLine.INSTANCE, "newline");
+
+                            empty = false;
+                        }
+
+                        if (empty)
+                            throw new ParserError("Empty import section");
+                    }
+                    else
+                    {
+                        output.Add(new PTImport(Consume<LTString>().Value));
+                    }
+                }
                 else if (Now([("newline", null)], true))
+
                     continue;
+
                 else break;
             }
         }
