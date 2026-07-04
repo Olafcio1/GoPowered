@@ -546,6 +546,8 @@ namespace GoPowered.Lang.Parser
                         throw new ParserError("Expression statement with no parts");
                     else if (expr.Parts[^1] is EPAccess || expr.Parts[^1] is EPMember)
                         throw new ParserError("Expression statement ends with unnecessary element/member access");
+                    else if (expr.Parts[^1] is EPSlice)
+                        throw new ParserError("Expression statement ends with unnecessary slice");
 
                     return new StmtExpression(expr);
                 }
@@ -758,7 +760,18 @@ namespace GoPowered.Lang.Parser
                         continue;
                     }
 
-                    parts.Add(new EPAccess(expr));
+                    if (Now([(null, Operator.Colon.ToToken())], true))
+                    {
+                        var from = expr;
+                        var to = ParseExpression();
+
+                        parts.Add(new EPSlice(from, to));
+                    }
+                    else
+                    {
+                        parts.Add(new EPAccess(expr));
+                    }
+
                     Require(Operator.RSquare.ToToken(), "']'");
                 }
                 else if (Now([(null, Operator.LParen.ToToken())], true))
