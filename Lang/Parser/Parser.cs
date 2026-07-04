@@ -614,7 +614,9 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LCurly.ToToken())], true))
                 {
-                    var fields = new Dictionary<string, Expression>();
+                    var positional = new List<Expression>();
+                    var keyword = new Dictionary<string, Expression>();
+
                     var comma = false;
 
                     while (true)
@@ -625,14 +627,23 @@ namespace GoPowered.Lang.Parser
                             Require(Operator.Comma.ToToken(), "','");
                         else comma = true;
 
-                        var name = Consume<LTLiteral>().Value;
-                        Require(Operator.Colon.ToToken(), "':'");
-                        var value = ParseExpression();
+                        if (Now([("literal", null), (null, Operator.Colon.ToToken())], false))
+                        {
+                            var name = Consume<LTLiteral>().Value;
+                            Require(Operator.Colon.ToToken(), "':'");
+                            var value = ParseExpression();
 
-                        fields[name] = value;
+                            keyword[name] = value;
+                        } else
+                        {
+                            if (keyword.Count > 0)
+                                throw new ParserError("Cannot provide positional parameters after keyword parameters");
+
+                            positional.Add(ParseExpression());
+                        }
                     }
 
-                    parts.Add(new EPNew(fields, generics));
+                    parts.Add(new EPNew(positional, keyword, generics));
                     generics = null;
 
                     continue;
