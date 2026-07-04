@@ -715,14 +715,18 @@ namespace GoPowered.Lang.Parser
             IExpressionTarget? target;
             IAnyExpression expr;
 
-            bool neg = Now([(null, Operator.LNot.ToToken())], true);
+            bool logicNeg = Now([(null, Operator.LNot.ToToken())], true);
+            bool mathNeg = Now([(null, Operator.Minus.ToToken())], true);
+
+            if (logicNeg && mathNeg)
+                throw new ParserError("A logical and math negation cannot be used together");
 
             if ((target = ParseSingularExpression(optional: true)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
             else expr = ParsePartExpression(allowInit: allowInit);
 
-            if (neg)
-                expr = new Negate(expr);
+                 if (logicNeg) expr = new LNegate(expr);
+            else if (mathNeg)  expr = new MNegate(expr);
 
             if (
                     allowMath &&
