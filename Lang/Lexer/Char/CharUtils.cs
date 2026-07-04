@@ -6,7 +6,7 @@
             (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
 
         public static bool IsLiteral(char ch) =>
-            IsLatin(ch) || IsDigit(ch) || ch >= 127;
+            ch == '_' || IsLatin(ch) || IsDigit(ch) || ch >= 127;
 
         public static bool IsDigit(char ch) =>
             ch >= '0' && ch <= '9';

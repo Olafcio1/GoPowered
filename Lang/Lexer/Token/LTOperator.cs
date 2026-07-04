@@ -56,7 +56,7 @@ namespace GoPowered.Lang.Lexer.Token
         // Pointers and channels
         [Description("<-")] Receive,
         // Miscellaneous
-        [Description("_")] Underscore,
+        //[Description("_")] Underscore,  //-- checking temporary moved to the parser, TODO make a special case or a custom token for it
         [Description(":=")] Assign,
         [Description(":")] Colon,
         [Description(";")] Semicolon,

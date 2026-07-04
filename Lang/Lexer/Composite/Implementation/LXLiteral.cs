@@ -18,7 +18,7 @@ namespace GoPowered.Lang.Lexer.Composite.Implementation
         public bool LexLiteral()
         {
             var ch = Peek();
-            if (!CharUtils.IsLatin(ch))
+            if (!CharUtils.IsLatin(ch) && ch != '_')
                 return false;
 
             Skip();

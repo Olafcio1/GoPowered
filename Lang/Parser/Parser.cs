@@ -538,6 +538,67 @@ namespace GoPowered.Lang.Parser
                     return new StmtReturn(values);
                 }
             }
+            else if (Now([(null, Keyword.FOR.ToToken())], true))
+            {
+                var i = 0;
+                var collectVariables = false;
+
+                while (true)
+                {
+                    if (
+                            Peek(i) is LTLiteral &&
+                            Peek(i + 1) is LTOperator op && op.Value == Operator.Comma
+                    )
+                    {
+                        i += 2;
+                        continue;
+                    } else if (
+                            Peek(i) is LTOperator op2 &&
+                            op2.Value == Operator.Assign
+                    )
+                    {
+                        i += 1;
+                        collectVariables = true;
+                    } else if (
+                            Peek(i++) is LTOperator op3 &&
+                            op3.Value == Operator.RCurly
+                    )
+                    {
+                        break;
+                    }
+                }
+
+                List<string?>? variables = null;
+
+                if (collectVariables)
+                {
+                    variables = [];
+
+                    var comma = false;
+
+                    while (true)
+                    {
+                        if (Now([(null, Operator.Assign.ToToken())], true))
+                            break;
+                        else if (!comma)
+                            comma = true;
+                        else Require(Operator.Comma.ToToken(), "','");
+
+                        var name = Consume<LTLiteral>().Value;
+                        if (name == "_")
+                            name = null;
+
+                        variables.Add(name);
+                    }
+                }
+
+                Require(Keyword.RANGE.ToToken(), "'range'");
+
+                var rangeThrough = ParseObjectExpression(false);
+                var effect = ParseCode();
+
+                return new StmtForRange(variables, rangeThrough, effect);
+            }
             else
             {
                 var anyexpr = ParseExpression();
@@ -578,19 +639,19 @@ namespace GoPowered.Lang.Parser
                 value = ParseExpression();
         }
 
-        protected Expression ParseObjectExpression()
+        protected Expression ParseObjectExpression(bool allowInit = true)
         {
-            return (Expression) ParseExpression(allowMath: false);
+            return (Expression) ParseExpression(allowMath: false, allowInit: allowInit);
         }
 
-        protected IAnyExpression ParseExpression(bool allowMath = true)
+        protected IAnyExpression ParseExpression(bool allowMath = true, bool allowInit = true)
         {
             IExpressionTarget? target;
             Expression expr;
 
             if ((target = ParseSingularExpression(optional: true)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
-            else expr = ParsePartExpression();
+            else expr = ParsePartExpression(allowInit: allowInit);
 
             if (
                     allowMath &&
@@ -679,7 +740,7 @@ namespace GoPowered.Lang.Parser
         /**
          * I also like to call it the `friendly expression`, as it's friendly to [expression] parts
          */
-        protected Expression ParsePartExpression()
+        protected Expression ParsePartExpression(bool allowInit = true)
         {
             var pointers = CountPointers();
             var target = ParseExpressionTarget();
@@ -704,6 +765,9 @@ namespace GoPowered.Lang.Parser
                         expr = ParseExpression();
                     } catch (ParserError)
                     {
+                        if (!allowInit)
+                            throw;
+
                         var failing = this.index;
                         this.index = ind;
 
@@ -741,7 +805,7 @@ namespace GoPowered.Lang.Parser
                         continue;
                     }
 
-                    if (Peek(1) is LTOperator op && op.Value == Operator.LCurly)
+                    if (Peek(1) is LTOperator op && op.Value == Operator.LCurly && allowInit)
                     {
                         this.index = ind;
 
@@ -799,7 +863,7 @@ namespace GoPowered.Lang.Parser
                     parts.Add(new EPCall(args));
                     continue;
                 }
-                else if (Now([(null, Operator.LCurly.ToToken())], true))
+                else if (allowInit && Now([(null, Operator.LCurly.ToToken())], true))
                 {
                     var positional = new List<IAnyExpression>();
                     var keyword = new Dictionary<string, IAnyExpression>();
