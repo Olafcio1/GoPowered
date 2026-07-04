@@ -847,6 +847,19 @@ namespace GoPowered.Lang.Parser
                 }
                 else if (Now([(null, Operator.LSquare.ToToken())], true))
                 {
+                    if (Now([(null, Operator.Colon.ToToken())], true))
+                    {
+                        // Slice without 'from'
+                        var to = Now([(null, Operator.RSquare.ToToken())], false)
+                                    ? null
+                                    : ParseExpression();
+
+                        parts.Add(new EPSlice(null, to));
+
+                        Require(Operator.RSquare.ToToken(), "']'");
+                        continue;
+                    }
+
                     IAnyExpression expr;
 
                     var ind = this.index;
@@ -924,7 +937,9 @@ namespace GoPowered.Lang.Parser
                     if (Now([(null, Operator.Colon.ToToken())], true))
                     {
                         var from = expr;
-                        var to = ParseExpression();
+                        var to = Now([(null, Operator.RSquare.ToToken())], false)
+                                    ? null
+                                    : ParseExpression();
 
                         parts.Add(new EPSlice(from, to));
                     }
