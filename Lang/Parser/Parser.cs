@@ -464,15 +464,47 @@ namespace GoPowered.Lang.Parser
             return code;
         }
 
+        private bool Assigning()
+        {
+            var i = 0;
+
+            while (!ReachedEOF(i + 2))
+            {
+                if (Peek(i++) is not LTLiteral)
+                    break;
+
+                if (Peek(i++) is not LTOperator op)
+                    break;
+
+                if (op.Value == Operator.Comma)
+                    continue;
+                else if (op.Value == Operator.Assign)
+                    return true;
+                else
+                    break;
+            }
+
+            return false;
+        }
+
         protected IStatement ParseStatement()
         {
-            if (!ReachedEOF(1) && Peek(1).Type().Equals("operator") && ((LTOperator)Peek(1)).Value == Operator.Assign)
+            if (Assigning())
             {
-                var name = Consume<LTLiteral>().Value;
+                var names = new List<string>();
+
+                do
+                {
+                    names.Add(Consume<LTLiteral>().Value);
+                } while (Now([(null, Operator.Comma.ToToken())], true));
+
                 Require(Operator.Assign.ToToken(), "':='");
+
                 var value = ParseExpression();
 
-                return new StmtAssign(name, value, null);
+                return names.Count == 1
+                        ? new StmtAssign(names[0], value, null)
+                        : new StmtExtractAssign(names, value, null);
             }
             else if (Now([(null, Keyword.VARIABLE.ToToken())], true))
             {
@@ -671,6 +703,8 @@ namespace GoPowered.Lang.Parser
 
                 if (anyexpr is Expression expr)
                 {
+                    //Console.WriteLine(expr);
+                    //Console.WriteLine(expr.Parts.Count);
                     if (Now([(null, Operator.Set.ToToken())], true))
                         if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '='");
