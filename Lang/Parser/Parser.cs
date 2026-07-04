@@ -125,7 +125,11 @@ namespace GoPowered.Lang.Parser
                     Require(Operator.Comma.ToToken(), "','");
 
                 var aName = Consume<LTLiteral>().Value;
+                var ellipsis = Now([(null, Operator.Ellipsis.ToToken())], true);
                 var aType = ParseType(true);
+
+                if (ellipsis && aType == null)
+                    throw new ParserError("A rest argument must have a type");
 
                 if (aType != null)
                     foreach (var arg in args)
@@ -134,7 +138,8 @@ namespace GoPowered.Lang.Parser
 
                 args.Add(new Argument(
                     aName,
-                    aType!
+                    aType!,
+                    ellipsis
                 ));
             }
 

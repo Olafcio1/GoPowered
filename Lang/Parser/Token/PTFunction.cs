@@ -14,7 +14,8 @@ namespace GoPowered.Lang.Parser.Token
 
     public class Argument(
         string Name,
-        IType Type
+        IType Type,
+        bool Rest
     )
     {
         public string Name = Name;

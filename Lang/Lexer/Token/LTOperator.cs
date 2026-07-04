@@ -61,6 +61,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description(":")] Colon,
         [Description(";")] Semicolon,
         [Description(",")] Comma,
+        [Description("...")] Ellipsis,
         [Description(".")] Dot
     }
 
