@@ -731,6 +731,18 @@ namespace GoPowered.Lang.Parser
                             throw new ParserError("Expected a reference before '='");
                         else return new StmtSet(expr, ParseExpression());
                     }
+                    else if (Now([(null, Operator.Increment.ToToken())], true))
+                    {
+                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
+                            throw new ParserError("Expected a reference before '++'");
+                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.TypeEnum.Add, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
+                    }
+                    else if (Now([(null, Operator.Decrement.ToToken())], true))
+                    {
+                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
+                            throw new ParserError("Expected a reference before '--'");
+                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.TypeEnum.Subtract, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
+                    }
                     else
                     {
                         var operations = new Dictionary<Operator, MathMember.TypeEnum>
