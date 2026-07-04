@@ -296,10 +296,16 @@ namespace GoPowered.Lang.Parser
         {
             if (Now([("literal", null)]))
             {
-                var name = Consume<LTLiteral>().Value;
+                var location = new List<string>();
+
+                do
+                {
+                    location.Add(Consume<LTLiteral>().Value);
+                } while (Now([(null, Operator.Dot.ToToken())], true));
+
                 var generics = ParseTypeGenerics();
 
-                return new UniqueType(name, generics);
+                return new UniqueType(location, generics);
             }
             else if (Now([(null, Keyword.STRING.ToToken())], true))
             {

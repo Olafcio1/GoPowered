@@ -1,7 +1,7 @@
 ﻿namespace GoPowered.Lang.Parser.Type.Go
 {
     public record UniqueType(
-        string Name,
+        List<string> Location,
         List<IType>? Generics
     ) : IType;
 }
