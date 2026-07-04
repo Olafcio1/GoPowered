@@ -93,6 +93,8 @@ namespace GoPowered.Lang.Lexer.Token
                 value_map.Add(op, str);
                 token_map.Add(op, new LTOperator(op));
             }
+
+            values.Sort(static (a, b) => b.ToCode()!.Length.CompareTo(a.ToCode()!.Length));
         }
 
         extension(Operator op)
