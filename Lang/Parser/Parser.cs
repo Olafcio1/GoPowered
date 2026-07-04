@@ -10,6 +10,7 @@ using GoPowered.Lang.Parser.Token.ExprMath;
 using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Token.Statement.Implementation;
+using GoPowered.Lang.Parser.Token.Statement.Implementation.Assign;
 using GoPowered.Lang.Parser.Type;
 using GoPowered.Lang.Parser.Type.Go;
 
@@ -387,18 +388,30 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Keyword.VARIABLE.ToToken())], true))
             {
-                var name = Consume<LTLiteral>().Value;
+                if (Now([(null, Operator.LParen.ToToken())], true))
+                {
+                    var assignment = new StmtMultiAssign([]);
 
-                IAnyExpression? value = null;
-                IType? type = null;
+                    while (true)
+                    {
+                        ConsumeNewlines();
 
-                if (!Now([(null, Operator.Set.ToToken())], false))
-                    type = ParseType();
+                        if (Now([(null, Operator.RParen.ToToken())], true))
+                            break;
 
-                if (Now([(null, Operator.Set.ToToken())], true))
-                    value = ParseExpression();
+                        ParseVarDefinition(out var name, out var value, out var type);
 
-                return new StmtAssign(name, value, type);
+                        assignment.Variables.Add(new Assignment(name, value, type));
+                    }
+
+                    return assignment;
+                }
+                else
+                {
+                    ParseVarDefinition(out var name, out var value, out var type);
+
+                    return new StmtAssign(name, value, type);
+                }
             }
             else if (Now([(null, Keyword.CONST.ToToken())], true))
             {
@@ -465,6 +478,20 @@ namespace GoPowered.Lang.Parser
                     throw new ParserError("A math expression cannot be used as a statement");
                 }
             }
+        }
+
+        private void ParseVarDefinition(out string name, out IAnyExpression? value, out IType? type)
+        {
+            name = Consume<LTLiteral>().Value;
+
+            value = null;
+            type = null;
+
+            if (!Now([(null, Operator.Set.ToToken())], false))
+                type = ParseType();
+
+            if (Now([(null, Operator.Set.ToToken())], true))
+                value = ParseExpression();
         }
 
         protected Expression ParseObjectExpression()
