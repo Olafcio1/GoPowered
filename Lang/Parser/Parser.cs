@@ -287,7 +287,9 @@ namespace GoPowered.Lang.Parser
             if (Now([("literal", null)]))
             {
                 var name = Consume<LTLiteral>().Value;
-                return new UniqueType(name);
+                var generics = ParseTypeGenerics();
+
+                return new UniqueType(name, generics);
             }
             else if (Now([(null, Keyword.STRING.ToToken())], true))
             {
@@ -393,6 +395,31 @@ namespace GoPowered.Lang.Parser
             {
                 throw new ParserError("Expected a type");
             }
+        }
+
+        private List<IType>? ParseTypeGenerics()
+        {
+            List<IType>? generics = null;
+
+            if (Now([(null, Operator.LSquare.ToToken())], true))
+            {
+                generics = [];
+
+                var comma = false;
+
+                while (true)
+                {
+                    if (Now([(null, Operator.RSquare.ToToken())], true))
+                        break;
+                    else if (!comma)
+                        comma = true;
+                    else Require(Operator.Comma.ToToken(), "','");
+
+                    generics.Add(ParseType()!);
+                }
+            }
+
+            return generics;
         }
 
         protected List<IStatement> ParseCode()
