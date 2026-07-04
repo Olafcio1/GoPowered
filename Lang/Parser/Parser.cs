@@ -63,6 +63,16 @@ namespace GoPowered.Lang.Parser
                 Consume();
         }
 
+        protected void ConsumeNewlines(ref bool used)
+        {
+            while (Now([("newline", null)]))
+            {
+                Consume();
+
+                used = true;
+            }
+        }
+
         protected PTFunction ParseFunctionDef()
         {
             Require(Keyword.FUNCTION.ToToken(), "'func'");
@@ -776,14 +786,24 @@ namespace GoPowered.Lang.Parser
                     var keyword = new Dictionary<string, IAnyExpression>();
 
                     var comma = false;
+                    var newlines = false;
 
                     while (true)
                     {
-                        if (Now([(null, Operator.RCurly.ToToken())], true))
+                        ConsumeNewlines(ref newlines);
+
+                        if (!newlines && Now([(null, Operator.RCurly.ToToken())], true))
                             break;
                         else if (comma)
                             Require(Operator.Comma.ToToken(), "','");
                         else comma = true;
+
+                        ConsumeNewlines(ref newlines);
+
+                        if (Now([(null, Operator.RCurly.ToToken())], true))
+                            break;
+
+                        ConsumeNewlines(ref newlines);
 
                         if (Now([("literal", null), (null, Operator.Colon.ToToken())], false))
                         {
