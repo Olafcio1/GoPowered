@@ -630,12 +630,32 @@ namespace GoPowered.Lang.Parser
                     }
                 }
 
-                Require(Keyword.RANGE.ToToken(), "'range'");
+                if (Now([(null, Keyword.RANGE.ToToken())], true))
+                {
+                    var rangeThrough = ParseObjectExpression(false);
+                    var effect = ParseCode();
 
-                var rangeThrough = ParseObjectExpression(false);
-                var effect = ParseCode();
+                    return new StmtForRange(variables, rangeThrough, effect);
+                }
+                else
+                {
+                    var initial = ParseExpression();
+                    Require(Operator.Semicolon.ToToken(), "';'");
 
-                return new StmtForRange(variables, rangeThrough, effect);
+                    var cond = ParseExpression();
+                    if (cond is not Condition)
+                        throw new ParserError("Expected a condition");
+
+                    Require(Operator.Semicolon.ToToken(), "';'");
+
+                    var after = ParseStatement();
+                    if (after is StmtForLoop || after is StmtForRange || after is StmtIf || after is StmtReturn)
+                        throw new ParserError("The for-loop post-iteration statement cannot be for, if or return");
+
+                    var effect = ParseCode();
+
+                    return new StmtForLoop(initial, (Condition) cond, after, effect);
+                }
             }
             else if (Now([(null, Keyword.IF.ToToken())], true))
             {
