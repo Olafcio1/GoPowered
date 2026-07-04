@@ -1,5 +1,5 @@
 ﻿namespace GoPowered.Lang.Parser.Token.ExprLogic
 {
-    public record LNegate(IAnyExpression Expr)
+    public record LBoth(ICondition A, ICondition B)
                 : ICondition;
 }

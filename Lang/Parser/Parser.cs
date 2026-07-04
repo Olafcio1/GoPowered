@@ -872,21 +872,44 @@ namespace GoPowered.Lang.Parser
 
             if (allowLogic)
             {
+                ICondition cond;
+
                 if (Now([(null, Operator.EqualTo.ToToken())], true))
-                    return new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.NotEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.NOT_EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.GreaterThan.ToToken())], true))
-                    return new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.GREATER_THAN, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.GreaterOrEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.GREATER_OR_EQUAL, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.LessThan.ToToken())], true))
-                    return new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.LESS_THAN, ParseExpression(allowInit: allowInit));
                 else if (Now([(null, Operator.LessOrEqual.ToToken())], true))
-                    return new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit));
+                    cond = new Condition(expr, ConditionType.LESS_OR_EQUAL, ParseExpression(allowInit: allowInit));
+                else goto logicIsNotPresent;
+
+                    if (Now([(null, Operator.LAnd.ToToken())], true))
+                        cond = new LBoth(cond, ParseCondition(allowInit: allowInit));
+
+                if (Now([(null, Operator.LOr.ToToken())], true))
+                        cond = new LEither(cond, ParseCondition(allowInit: allowInit));
+
+                return cond;
+
+                logicIsNotPresent: {}
             }
 
             return expr;
+        }
+
+        protected Condition ParseCondition(bool allowInit = true)
+        {
+            var expr = ParseExpression(allowInit: allowInit);
+            var cond = expr is Condition cast
+                        ? cast
+                        : new Condition(expr, ConditionType.EQUAL, new Expression(ESTBoolean.TRUE, null, 0, Singular: true));
+
+            return cond;
         }
 
         protected IExpressionTarget? ParseSingularExpression(bool optional = false)
