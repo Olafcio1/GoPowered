@@ -89,16 +89,18 @@ namespace GoPowered.Lang.Parser
                 Require(Operator.RParen.ToToken(), "')'");
             }
 
-            ParseFunctionSignature(out var name, out var args, out var returns);
+            ParseFunctionSignature(out var name, out var args, out var returns, out var generics);
 
             var body = ParseCode();
-            return new PTFunction(name, args, body, returns, parent);
+            return new PTFunction(name, args, body, returns, parent, generics);
         }
 
-        protected void ParseFunctionSignature(out string name, out List<Argument> args, out List<ReturnValue>? returns)
+        protected void ParseFunctionSignature(out string name, out List<Argument> args, out List<ReturnValue>? returns, out Dictionary<string, IType>? generics)
         {
             name = Consume<LTLiteral>().Value;
             args = new List<Argument>();
+
+            generics = ParseDefGenerics();
 
             Require(Operator.LParen.ToToken(), "'('");
 
@@ -170,6 +172,21 @@ namespace GoPowered.Lang.Parser
             if (Now([(null, Operator.Set.ToToken())], true))
                 return new PTTypeAlias(name, ParseType()!);
 
+            Dictionary<string, IType>? generics = ParseDefGenerics();
+
+            if (Now([(null, Keyword.STRUCT.ToToken())], true))
+                return ParseTypeStruct(name, generics);
+            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+                return ParseTypeInterface(name, generics);
+            else if (ParseType_out(out IType? type, optional: true))
+                return new PTTypeClone(name, type!, generics);
+            else if (Now([(null, Operator.Set.ToToken())], true))
+                throw new ParserError("A type alias cannot use generics");
+            else throw new ParserError("Expected a struct, interface, type alias or type clone");
+        }
+
+        private Dictionary<string, IType>? ParseDefGenerics()
+        {
             Dictionary<string, IType>? generics = null;
 
             if (Now([(null, Operator.LSquare.ToToken())], true))
@@ -193,15 +210,7 @@ namespace GoPowered.Lang.Parser
                 }
             }
 
-            if (Now([(null, Keyword.STRUCT.ToToken())], true))
-                return ParseTypeStruct(name, generics);
-            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
-                return ParseTypeInterface(name, generics);
-            else if (ParseType_out(out IType? type, optional: true))
-                return new PTTypeClone(name, type!, generics);
-            else if (Now([(null, Operator.Set.ToToken())], true))
-                throw new ParserError("A type alias cannot use generics");
-            else throw new ParserError("Expected a struct, interface, type alias or type clone");
+            return generics;
         }
 
         protected PTTypeStruct ParseTypeStruct(string name, Dictionary<string, IType>? generics)
@@ -260,8 +269,8 @@ namespace GoPowered.Lang.Parser
                     continue;
                 }
 
-                ParseFunctionSignature(out var fName, out var fArgs, out var fReturns);
-                Interface.Methods.Add(new FunctionSignature(fName, fArgs, fReturns));
+                ParseFunctionSignature(out var fName, out var fArgs, out var fReturns, out var fGenerics);
+                Interface.Methods.Add(new FunctionSignature(fName, fArgs, fReturns, fGenerics));
             }
 
             return Interface;

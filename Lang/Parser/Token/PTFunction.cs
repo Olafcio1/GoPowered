@@ -8,7 +8,8 @@ namespace GoPowered.Lang.Parser.Token
         List<Argument> Arguments,
         List<IStatement> Body,
         List<ReturnValue>? Returns,
-        MethodParent? Parent
+        MethodParent? Parent,
+        Dictionary<string, IType>? Generics
     ) : IParserToken;
 
     public class Argument(
