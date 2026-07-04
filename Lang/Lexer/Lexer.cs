@@ -34,13 +34,19 @@ namespace GoPowered.Lang.Lexer
             {
                 #pragma warning disable CS0642
                 if (XNumber.LexNumber());
-                else if (Now("//"))
+                else if (Now("//")) {
                     // Comments
                     while (Consume() != '\n');
-                else if (Now("/*"))
+
+                    output.Add(LTNewLine.INSTANCE);
+                }
+                else if (Now("/*")) {
                     // Multiline comments
                     while (!Now("*/"))
                         Consume();
+
+                    output.Add(LTNewLine.INSTANCE);
+                }
                 else if (XOperator.LexOperator());
                 else if (XLiteral.LexLiteral());
                 else if (XString.LexString());
