@@ -7,5 +7,5 @@ namespace GoPowered.Lang.Parser.Token.Object
         List<Argument> Args,
         List<ReturnValue>? Returns,
         Dictionary<string, IType>? Generics
-    ) : IParserToken;
+    );
 }
