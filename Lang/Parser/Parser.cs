@@ -202,11 +202,12 @@ namespace GoPowered.Lang.Parser
 
             while (true)
             {
+                if (Now([(null, closing.ToToken())], true))
+                    break;
+
                 ConsumeNewlines(ref newlines);
 
-                if (!newlines && Now([(null, closing.ToToken())], true))
-                    break;
-                else if (comma)
+                if (comma)
                     Require(Operator.Comma.ToToken(), "','");
                 else comma = true;
 
