@@ -679,9 +679,15 @@ namespace GoPowered.Lang.Parser
 
                     Require(Operator.Semicolon.ToToken(), "';'");
 
-                    var after = ParseStatement();
-                    if (after is StmtForLoop || after is StmtForRange || after is StmtIf || after is StmtReturn)
-                        throw new ParserError("The for-loop post-iteration statement cannot be for, if or return");
+                    IStatement? after = null;
+
+                    if (!Now([(null, Operator.LCurly.ToToken())], false))
+                    {
+                        after = ParseStatement();
+
+                        if (after is StmtForLoop || after is StmtForRange || after is StmtIf || after is StmtReturn)
+                            throw new ParserError("The for-loop post-iteration statement cannot be for, if or return");
+                    }
 
                     var effect = ParseCode();
 
