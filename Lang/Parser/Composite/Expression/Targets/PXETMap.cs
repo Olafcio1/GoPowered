@@ -18,32 +18,14 @@ namespace GoPowered.Lang.Parser
 
                 Require(Operator.LCurly.ToToken(), "'{'");
 
-                var comma = false;
-                var newlines = false;
-
-                while (true)
+                HandleList(Operator.RCurly, () =>
                 {
-                    ConsumeNewlines(ref newlines);
-
-                    if (!newlines && Now([(null, Operator.RCurly.ToToken())], true))
-                        break;
-                    else if (comma)
-                        Require(Operator.Comma.ToToken(), "','");
-                    else comma = true;
-
-                    ConsumeNewlines(ref newlines);
-
-                    if (Now([(null, Operator.RCurly.ToToken())], true))
-                        break;
-
-                    ConsumeNewlines(ref newlines);
-
                     var key = ParseExpression();
                     Require(Operator.Colon.ToToken(), "':'");
                     var value = ParseExpression();
 
                     token.Values[key] = value;
-                }
+                });
 
                 return token;
             }

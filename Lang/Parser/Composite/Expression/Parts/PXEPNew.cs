@@ -15,26 +15,8 @@ namespace GoPowered.Lang.Parser
                 var positional = new List<IAnyExpression>();
                 var keyword = new Dictionary<string, IAnyExpression>();
 
-                var comma = false;
-                var newlines = false;
-
-                while (true)
+                HandleList(Operator.RCurly, () =>
                 {
-                    ConsumeNewlines(ref newlines);
-
-                    if (!newlines && Now([(null, Operator.RCurly.ToToken())], true))
-                        break;
-                    else if (comma)
-                        Require(Operator.Comma.ToToken(), "','");
-                    else comma = true;
-
-                    ConsumeNewlines(ref newlines);
-
-                    if (Now([(null, Operator.RCurly.ToToken())], true))
-                        break;
-
-                    ConsumeNewlines(ref newlines);
-
                     if (Now([("literal", null), (null, Operator.Colon.ToToken())], false))
                     {
                         var name = Consume<LTLiteral>().Value;
@@ -50,7 +32,7 @@ namespace GoPowered.Lang.Parser
 
                         positional.Add(ParseExpression());
                     }
-                }
+                });
 
                 parts.Add(new EPNew(positional, keyword, generics));
                 generics = null;

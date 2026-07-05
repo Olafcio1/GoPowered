@@ -194,6 +194,33 @@ namespace GoPowered.Lang.Parser
 
         protected partial IExpressionTarget ParseExpressionTarget(bool allowInit = true, bool constant = false);
 
+        protected delegate void ListHandler();
+        protected void HandleList(Operator closing, ListHandler handler)
+        {
+            var comma = false;
+            var newlines = false;
+
+            while (true)
+            {
+                ConsumeNewlines(ref newlines);
+
+                if (!newlines && Now([(null, closing.ToToken())], true))
+                    break;
+                else if (comma)
+                    Require(Operator.Comma.ToToken(), "','");
+                else comma = true;
+
+                ConsumeNewlines(ref newlines);
+
+                if (Now([(null, closing.ToToken())], true))
+                    break;
+
+                ConsumeNewlines(ref newlines);
+
+                handler();
+            }
+        }
+
         protected static bool IsConvertibleType(Keyword kw)
         {
             return (kw == Keyword.RUNE ||

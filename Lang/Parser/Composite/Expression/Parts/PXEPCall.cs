@@ -12,23 +12,14 @@ namespace GoPowered.Lang.Parser
             if (Now([(null, Operator.LParen.ToToken())], true))
             {
                 var args = new List<Parameter>();
-                var comma = false;
 
-                while (true)
+                HandleList(Operator.RParen, () =>
                 {
-                    if (Now([(null, Operator.RParen.ToToken())], true))
-                        break;
-                    else if (comma)
-                        Require(Operator.Comma.ToToken(), "','");
-                    else comma = true;
-
-                    ConsumeNewlines();
-
                     var value = ParseExpression();
                     var ellipsis = Now([(null, Operator.Ellipsis.ToToken())], true);
 
                     args.Add(new Parameter(value, ellipsis));
-                }
+                });
 
                 parts.Add(new EPCall(args));
                 return true;
