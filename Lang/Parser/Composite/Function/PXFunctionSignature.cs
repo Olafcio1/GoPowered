@@ -39,6 +39,9 @@ namespace GoPowered.Lang.Parser
                 if (ellipsis && aType == null)
                     throw new ParserError("A rest argument must have a type");
 
+                if (aName == "_")
+                    aName = null;
+
                 if (aType != null)
                     foreach (var arg in args)
                         if (arg.Type == null)
