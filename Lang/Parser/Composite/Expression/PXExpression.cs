@@ -37,7 +37,7 @@ namespace GoPowered.Lang.Parser
                             op.Value == Operator.Modulus ||
                             //op.Value == Operator.Exponentiate ||
                             op.Value == Operator.Ampersand ||
-                            op.Value == Operator.BOr ||
+                            op.Value == Operator.VLine ||
                             op.Value == Operator.BXor ||
                             op.Value == Operator.BShiftLeft ||
                             op.Value == Operator.BShiftRight
@@ -126,7 +126,7 @@ namespace GoPowered.Lang.Parser
                     ConsumeNewlines();
                     math.Members.Add(new MathMember(MathMember.Bitwise.And, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                 }
-                else if (Now([(null, Operator.BOr.ToToken())], true))
+                else if (Now([(null, Operator.VLine.ToToken())], true))
                 {
                     ConsumeNewlines();
                     math.Members.Add(new MathMember(MathMember.Bitwise.Or, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));

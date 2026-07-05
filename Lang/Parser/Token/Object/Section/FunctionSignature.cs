@@ -1,6 +1,6 @@
 ﻿using GoPowered.Lang.Parser.Type;
 
-namespace GoPowered.Lang.Parser.Token.Object
+namespace GoPowered.Lang.Parser.Token.Object.Section
 {
     public record FunctionSignature(
         string Name,

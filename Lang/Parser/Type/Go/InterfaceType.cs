@@ -1,4 +1,4 @@
-﻿using GoPowered.Lang.Parser.Token.Object;
+﻿using GoPowered.Lang.Parser.Token.Object.Section;
 
 namespace GoPowered.Lang.Parser.Type.Go
 {

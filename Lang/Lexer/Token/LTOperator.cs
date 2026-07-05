@@ -37,7 +37,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("!")] LNot,
         // Bitwise
         [Description("&")] Ampersand,
-        [Description("|")] BOr,
+        [Description("|")] VLine,
         [Description("^")] BXor,
         [Description("<<")] BShiftLeft,
         [Description(">>")] BShiftRight,
@@ -62,7 +62,8 @@ namespace GoPowered.Lang.Lexer.Token
         [Description(";")] Semicolon,
         [Description(",")] Comma,
         [Description("...")] Ellipsis,
-        [Description(".")] Dot
+        [Description(".")] Dot,
+        [Description("~")] Tilde
     }
 
     public static class OperatorExtension

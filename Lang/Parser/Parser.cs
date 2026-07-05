@@ -6,6 +6,8 @@ using GoPowered.Lang.Parser.Token.Expr;
 using GoPowered.Lang.Parser.Token.Expr.Target.Single;
 using GoPowered.Lang.Parser.Token.ExprLogic;
 using GoPowered.Lang.Parser.Token.Object;
+using GoPowered.Lang.Parser.Token.Object.Generic;
+using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Type;
 
@@ -90,8 +92,34 @@ namespace GoPowered.Lang.Parser
             }
             else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
             {
-                ParseTypeInterface(out var methods, out var inherits);
-                return new PTTypeInterface(name, methods, inherits, generics);
+                var ind = this.index;
+
+                try
+                {
+                    ParseTypeInterface(out var methods, out var inherits);
+                    return new PTTypeInterface(name, methods, inherits, generics);
+                }
+                catch (ParserError e)
+                {
+                    var failing = this.index;
+                    this.index = ind;
+
+                    ParserError e2;
+
+                    try
+                    {
+                        ParseTypeGeneric(out var types);
+                        return new PTTypeGeneric(name, types, generics);
+                    }
+                    catch (ParserError x)
+                    {
+                        e2 = x;
+                    }
+
+                    this.index = failing;
+                    //\n\n--- Interface stacktrace ---\n{e}\n\n--- Generic stacktrace ---\n{e2}\n\n--- Stacktrace ---
+                    throw new ParserError($"Couldn't parse typedef;\n- interface output: {e.Message}\n- generic output: {e2.Message}");
+                }
             }
             else if (ParseType_out(out IType? type, optional: true))
                 return new PTTypeClone(name, type!, generics);
@@ -133,6 +161,8 @@ namespace GoPowered.Lang.Parser
         protected partial void ParseTypeStruct(out Dictionary<string, IType> Fields, out List<string> Inherits);
 
         protected partial void ParseTypeInterface(out Dictionary<string, FunctionSignature> Methods, out List<string> Inherits);
+
+        protected partial void ParseTypeGeneric(out List<GenericPossibility> Types);
 
         protected bool ParseType_out(out IType? type, bool optional)
         {
