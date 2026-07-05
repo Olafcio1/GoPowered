@@ -495,6 +495,29 @@ namespace GoPowered.Lang.Parser
             return false;
         }
 
+        private bool Setting()
+        {
+            var i = -1;
+
+            while (!ReachedEOF(i + 2))
+            {
+                if (Peek(i++) is not LTLiteral)
+                    break;
+
+                if (Peek(i++) is not LTOperator op)
+                    break;
+
+                if (op.Value == Operator.Comma)
+                    continue;
+                else if (op.Value == Operator.Set)
+                    return true;
+                else
+                    break;
+            }
+
+            return false;
+        }
+
         protected IStatement ParseStatement()
         {
             if (Assigning())
@@ -732,7 +755,7 @@ namespace GoPowered.Lang.Parser
                 return new StmtIf(branches, otherwise);
             }
             else
-            {
+                    {
                 var anyexpr = ParseExpression();
 
                 if (anyexpr is Expression expr)
@@ -744,6 +767,37 @@ namespace GoPowered.Lang.Parser
                         if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '='");
                         else return new StmtSet(expr, ParseExpression());
+                    }
+                    else if (Setting())
+                    {
+                        if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
+                            throw new ParserError("Expected a reference before '='");
+
+                        List<Expression> extractTo = [expr];
+
+                        while (Now([(null, Operator.Comma.ToToken())], true))
+                        {
+                            var another = ParseExpression();
+
+                            if (another is not Expression anotherExpr)
+                                throw new ParserError("Expected a reference");
+
+                            if (anotherExpr.Parts != null && anotherExpr.Parts.Count > 0 && anotherExpr.Parts[^1] is EPCall)
+                                throw new ParserError("Expected a reference");
+
+                            extractTo.Add(anotherExpr);
+                        }
+
+                        Require(Operator.Set.ToToken(), "'='");
+
+                        List<IAnyExpression> extractFrom = [];
+
+                        do
+                        {
+                            extractFrom.Add(ParseExpression());
+                        } while (Now([(null, Operator.Comma.ToToken())], true));
+
+                        return new StmtExtractSet(extractFrom, extractTo);
                     }
                     else if (Now([(null, Operator.Increment.ToToken())], true))
                     {
