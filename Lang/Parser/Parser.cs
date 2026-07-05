@@ -679,7 +679,7 @@ namespace GoPowered.Lang.Parser
                         var i = 0;
                         var ok = false;
 
-                        while (true)
+                        while (!ReachedEOF(i))
                         {
                             if (Peek(i++) is LTNewLine)
                                 continue;
