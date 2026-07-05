@@ -196,7 +196,7 @@ namespace GoPowered.Lang.Parser
 
         protected static bool IsConvertibleType(Keyword kw)
         {
-            return (kw == Keyword.CHAR || 
+            return (kw == Keyword.RUNE ||
                     kw == Keyword.INT ||
                     kw == Keyword.INT64 ||
                     kw == Keyword.INT32 ||

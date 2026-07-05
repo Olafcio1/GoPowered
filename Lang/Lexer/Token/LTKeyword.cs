@@ -54,7 +54,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("false")] FALSE,
         // Built-in Types
         [Description("string")] STRING,
-        [Description("char")] CHAR,
+        [Description("rune")] RUNE,
         [Description("bool")] BOOL,
         [Description("int")] INT,
         [Description("int64")] INT64,

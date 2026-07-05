@@ -34,9 +34,9 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.STRING;
             }
-            else if (Now([(null, Keyword.CHAR.ToToken())], true))
+            else if (Now([(null, Keyword.RUNE.ToToken())], true))
             {
-                return PrimitiveType.CHAR;
+                return PrimitiveType.RUNE;
             }
             else if (Now([(null, Keyword.BOOL.ToToken())], true))
             {
