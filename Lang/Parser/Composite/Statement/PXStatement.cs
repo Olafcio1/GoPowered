@@ -43,6 +43,8 @@ namespace GoPowered.Lang.Parser
                 else
                     return ParseValueSwitch();
             }
+            else if (Now([(null, Keyword.FALLTHROUGH.ToToken())], true))
+                return ParseFallthrough();
             else
                 return ParseExpressionStmt();
         }
@@ -164,5 +166,6 @@ namespace GoPowered.Lang.Parser
         private partial StmtSelect ParseSelect();
         private partial StmtSwitch ParseSwitch();
         private partial StmtSwitchValue ParseValueSwitch();
+        private partial StmtFallthrough ParseFallthrough();
     }
 }
