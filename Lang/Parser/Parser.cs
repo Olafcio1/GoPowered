@@ -252,24 +252,6 @@ namespace GoPowered.Lang.Parser
             }
         }
 
-        protected static bool IsConvertibleType(Keyword kw)
-        {
-            return (kw == Keyword.RUNE ||
-                    kw == Keyword.INT ||
-                    kw == Keyword.INT64 ||
-                    kw == Keyword.INT32 ||
-                    kw == Keyword.INT16 ||
-                    kw == Keyword.INT8 ||
-                    kw == Keyword.UINT ||
-                    kw == Keyword.UINT64 ||
-                    kw == Keyword.UINT32 ||
-                    kw == Keyword.UINT16 ||
-                    kw == Keyword.UINT8 ||
-                    kw == Keyword.FLOAT ||
-                    kw == Keyword.FLOAT64 ||
-                    kw == Keyword.FLOAT32);
-        }
-
         protected void CollectImports()
         {
             while (!ReachedEOF())
