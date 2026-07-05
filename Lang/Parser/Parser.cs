@@ -1177,7 +1177,7 @@ namespace GoPowered.Lang.Parser
                         continue;
                     }
 
-                    if (Peek(1) is LTOperator op && op.Value == Operator.LCurly && allowInit)
+                    if (Peek(0) is LTOperator op && (op.Value == Operator.Comma || op.Value == Operator.LCurly) && allowInit)
                     {
                         this.index = ind;
 
