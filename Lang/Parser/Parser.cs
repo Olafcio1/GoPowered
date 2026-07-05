@@ -411,6 +411,12 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.ERROR;
             }
+            else if (Now([(null, Keyword.FUNCTION.ToToken())], true))
+            {
+                ParseFunctionSignature(out var args, out var returns, out var generics);
+
+                return new FunctionType(args, returns, generics);
+            }
             else if (Now([(null, Operator.Star.ToToken())], true))
             {
                 var type = ParseType();
