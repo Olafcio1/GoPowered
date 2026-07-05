@@ -1,7 +1,6 @@
-﻿using GoPowered.Lang.Lexer;
-using GoPowered.Lang.Parser;
+﻿using GoPowered.PoweredLang.PoweredLexer;
+using GoPowered.PoweredLang.PoweredParser;
 using System.Collections;
-using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace GoPowered {
@@ -12,8 +11,8 @@ namespace GoPowered {
             if (args.Length == 2 && args[0] == "run") {
                 var path = args[1];
 
-                var lexed = new Lexer(File.ReadAllText(path)).Lex();
-                var parser = new Parser(lexed);
+                var lexed = new PoweredLexer(File.ReadAllText(path)).Lex();
+                var parser = new PoweredParser(lexed);
                 parser.Parse();
 
                 Console.Write(lexed.Count);

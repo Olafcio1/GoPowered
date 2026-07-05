@@ -1,31 +1,17 @@
-﻿using GoPowered.Lang.Lexer.Char;
-using GoPowered.Lang.Lexer.Composite.Implementation;
-using GoPowered.Lang.Lexer.Token;
+﻿using GoPowered.Lang.Lexer.Token;
 
 namespace GoPowered.Lang.Lexer
 {
-    public class Lexer
+    public partial class Lexer
     {
         protected readonly string input;
         protected int index;
         public readonly List<ILexerToken> output;
 
-        protected readonly LXLiteral XLiteral;
-        protected readonly LXOperator XOperator;
-        protected readonly LXString XString;
-        protected readonly LXChar XChar;
-        protected readonly LXNumber XNumber;
-
         public Lexer(string input) {
             this.input = input;
             this.index = 0;
             this.output = [];
-
-            this.XLiteral = new LXLiteral(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
-            this.XOperator = new LXOperator(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
-            this.XString = new LXString(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
-            this.XChar = new LXChar(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now);
-            this.XNumber = new LXNumber(Peek, Consume, Consume, Skip, AddToken, ReachedEOF, Now, Now, IsFirst);
         }
 
         public List<ILexerToken> Lex()
@@ -33,7 +19,7 @@ namespace GoPowered.Lang.Lexer
             while (!ReachedEOF())
             {
                 #pragma warning disable CS0642
-                if (XNumber.LexNumber());
+                if (LexNumber());
                 else if (Now("//")) {
                     // Comments
                     while (Consume() != '\n');
@@ -47,10 +33,10 @@ namespace GoPowered.Lang.Lexer
 
                     output.Add(LTNewLine.INSTANCE);
                 }
-                else if (XOperator.LexOperator());
-                else if (XLiteral.LexLiteral());
-                else if (XString.LexString());
-                else if (XChar.LexChar());
+                else if (LexOperator());
+                else if (LexLiteral());
+                else if (LexString());
+                else if (LexChar());
                 else if (Now('\r') || Now('\n'))
                     // Newlines
                     output.Add(LTNewLine.INSTANCE);
@@ -122,7 +108,7 @@ namespace GoPowered.Lang.Lexer
             return index == 0;
         }
 
-        protected void Skip(int count)
+        protected void Skip(int count = 1)
         {
             index += count;
         }

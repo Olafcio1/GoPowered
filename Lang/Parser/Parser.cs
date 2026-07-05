@@ -10,6 +10,7 @@ using GoPowered.Lang.Parser.Token.Object.Generic;
 using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Token.Statement;
 using GoPowered.Lang.Parser.Type;
+using System.Xml.Linq;
 
 namespace GoPowered.Lang.Parser
 {
@@ -74,17 +75,20 @@ namespace GoPowered.Lang.Parser
 
         protected partial void ParseFunctionSignature(out List<Argument> args, out List<ReturnValue>? returns, out Dictionary<string, IType>? generics);
 
-        protected IParserToken ParseTypeDef()
+        protected virtual bool ParseTypeDef_Pre(string name, out IParserToken? token)
         {
-            Require(Keyword.TYPE.ToToken(), "'type'");
-
-            var name = Consume<LTLiteral>().Value;
-
             if (Now([(null, Operator.Set.ToToken())], true))
-                return new PTTypeAlias(name, ParseType()!);
+            {
+                token = new PTTypeAlias(name, ParseType()!);
+                return true;
+            }
 
-            Dictionary<string, IType>? generics = ParseDefGenerics(hard: false);
+            token = null;
+            return false;
+        }
 
+        protected virtual IParserToken ParseTypeDef_Post(string name, Dictionary<string, IType>? generics)
+        {
             if (Now([(null, Keyword.STRUCT.ToToken())], true))
             {
                 ParseTypeStruct(out var fields, out var inherits);
@@ -126,6 +130,20 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Operator.Set.ToToken())], true))
                 throw new ParserError("A type alias cannot use generics");
             else throw new ParserError("Expected a struct, interface, type alias or type clone");
+        }
+
+        protected IParserToken ParseTypeDef()
+        {
+            Require(Keyword.TYPE.ToToken(), "'type'");
+
+            var name = Consume<LTLiteral>().Value;
+
+            if (ParseTypeDef_Pre(name, out var token))
+                return token!;
+
+            Dictionary<string, IType>? generics = ParseDefGenerics(hard: false);
+
+            return ParseTypeDef_Post(name, generics);
         }
 
         private Dictionary<string, IType>? ParseDefGenerics(bool hard = true)

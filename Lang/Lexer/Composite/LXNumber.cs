@@ -1,28 +1,11 @@
 ﻿using GoPowered.Lang.Lexer.Char;
 using GoPowered.Lang.Lexer.Token;
-using System;
 
-namespace GoPowered.Lang.Lexer.Composite.Implementation
+namespace GoPowered.Lang.Lexer
 {
-    public sealed class LXNumber : CLexer
+    public partial class Lexer
     {
-        internal delegate bool IsFirstT();
-        private IsFirstT IsFirst;
-
-        internal LXNumber(PeekT peek,
-                           ConsumeCharT consumeChar,
-                           ConsumeStringT consumeString,
-                           SkipT skip,
-                           AddTokenT addToken,
-                           ReachedEOFT reachedEOF,
-                           NowCharT nowChar,
-                           NowStringT nowString,
-                           IsFirstT isFirst) : base(peek, consumeChar, consumeString, skip, addToken, reachedEOF, nowChar, nowString)
-        {
-            this.IsFirst = isFirst;
-        }
-
-        public bool LexNumber()
+        public virtual bool LexNumber()
         {
             bool vneg;
             bool vpos;

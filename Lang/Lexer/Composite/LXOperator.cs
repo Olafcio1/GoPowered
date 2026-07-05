@@ -1,20 +1,10 @@
 ﻿using GoPowered.Lang.Lexer.Token;
 
-namespace GoPowered.Lang.Lexer.Composite.Implementation
+namespace GoPowered.Lang.Lexer
 {
-    public sealed class LXOperator : CLexer
+    public partial class Lexer
     {
-        internal LXOperator(PeekT peek,
-                            ConsumeCharT consumeChar,
-                            ConsumeStringT consumeString,
-                            SkipT skip,
-                            AddTokenT addToken,
-                            ReachedEOFT reachedEOF,
-                            NowCharT nowChar,
-                            NowStringT nowString) : base(peek, consumeChar, consumeString, skip, addToken, reachedEOF, nowChar, nowString)
-        {}
-
-        public bool LexOperator()
+        public virtual bool LexOperator()
         {
             foreach (var op in Operator.Values())
             {
