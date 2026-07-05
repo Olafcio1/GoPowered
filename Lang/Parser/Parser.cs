@@ -192,8 +192,10 @@ namespace GoPowered.Lang.Parser
             Dictionary<string, IType>? generics = ParseDefGenerics(hard: false);
 
             if (Now([(null, Keyword.STRUCT.ToToken())], true))
-                return ParseTypeStruct(name, generics);
-            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+            {
+                ParseTypeStruct(out var fields, out var inherits);
+                return new PTTypeStruct(name, fields, inherits, generics);
+            } else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
                 return ParseTypeInterface(name, generics);
             else if (ParseType_out(out IType? type, optional: true))
                 return new PTTypeClone(name, type!, generics);
@@ -232,11 +234,12 @@ namespace GoPowered.Lang.Parser
             return generics;
         }
 
-        protected PTTypeStruct ParseTypeStruct(string name, Dictionary<string, IType>? generics)
+        protected void ParseTypeStruct(out Dictionary<string, IType> Fields, out List<string> Inherits)
         {
             Require(Operator.LCurly.ToToken(), "'{'");
 
-            var Struct = new PTTypeStruct(name, [], [], generics);
+            Fields = [];
+            Inherits = [];
 
             while (true)
             {
@@ -248,7 +251,7 @@ namespace GoPowered.Lang.Parser
                 if (Now([("literal", null), ("newline", null)], false))
                 {
                     // Struct Inherit
-                    Struct.Inherits.Add(Consume<LTLiteral>().Value);
+                    Inherits.Add(Consume<LTLiteral>().Value);
                     continue;
                 }
 
@@ -262,10 +265,8 @@ namespace GoPowered.Lang.Parser
                 var fType = ParseType();
 
                 foreach (var fName in fNames)
-                    Struct.Fields[fName] = fType!;
+                    Fields[fName] = fType!;
             }
-
-            return Struct;
         }
 
         protected PTTypeInterface ParseTypeInterface(string name, Dictionary<string, IType>? generics)
@@ -416,6 +417,12 @@ namespace GoPowered.Lang.Parser
                 ParseFunctionSignature(out var args, out var returns, out var generics);
 
                 return new FunctionType(args, returns, generics);
+            }
+            else if (Now([(null, Keyword.STRUCT.ToToken())], true))
+            {
+                ParseTypeStruct(out var fields, out var inherits);
+
+                return new StructType(fields, inherits);
             }
             else if (Now([(null, Operator.Star.ToToken())], true))
             {
