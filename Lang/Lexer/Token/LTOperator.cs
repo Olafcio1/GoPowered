@@ -36,7 +36,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("||")] LOr,
         [Description("!")] LNot,
         // Bitwise
-        [Description("&")] Ampersand, //(BAnd)
+        [Description("&")] Ampersand,
         [Description("|")] BOr,
         [Description("^")] BXor,
         [Description("<<")] BShiftLeft,

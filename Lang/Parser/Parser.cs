@@ -743,25 +743,30 @@ namespace GoPowered.Lang.Parser
                     {
                         if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '++'");
-                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.TypeEnum.Add, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
+                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.Arithmetic.Add, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
                     }
                     else if (Now([(null, Operator.Decrement.ToToken())], true))
                     {
                         if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                             throw new ParserError("Expected a reference before '--'");
-                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.TypeEnum.Subtract, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
+                        else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.Arithmetic.Subtract, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
                     }
                     else
                     {
-                        var operations = new Dictionary<Operator, MathMember.TypeEnum>
+                        var operations = new Dictionary<Operator, MathMember.IOperation>
                         {
-                            [Operator.AddSet] = MathMember.TypeEnum.Add,
-                            [Operator.SubtractSet] = MathMember.TypeEnum.Subtract,
-                            [Operator.MultiplySet] = MathMember.TypeEnum.Multiply,
-                            [Operator.DivideSet] = MathMember.TypeEnum.Divide,
-                            [Operator.ModulusSet] = MathMember.TypeEnum.Modulus
-                            // TODO Support bitwise
-                            //[Operator.BAndSet] = MathMember.TypeEnum.And,
+                            // Arithmetic
+                            [Operator.AddSet] = MathMember.Arithmetic.Add,
+                            [Operator.SubtractSet] = MathMember.Arithmetic.Subtract,
+                            [Operator.MultiplySet] = MathMember.Arithmetic.Multiply,
+                            [Operator.DivideSet] = MathMember.Arithmetic.Divide,
+                            [Operator.ModulusSet] = MathMember.Arithmetic.Modulus,
+                            // Bitwise
+                            [Operator.Ampersand] = MathMember.Bitwise.And,
+                            [Operator.BOr] = MathMember.Bitwise.Or,
+                            [Operator.BXor] = MathMember.Bitwise.Xor,
+                            [Operator.BShiftLeft] = MathMember.Bitwise.ShiftLeft,
+                            [Operator.BShiftRight] = MathMember.Bitwise.ShiftRight
                         };
 
                         foreach (var (@operator, operation) in operations)
@@ -836,8 +841,13 @@ namespace GoPowered.Lang.Parser
                             op.Value == Operator.Minus ||
                             op.Value == Operator.Star ||
                             op.Value == Operator.Slash ||
-                            op.Value == Operator.Modulus
-                            //op.Value == Operator.Exponentiate
+                            op.Value == Operator.Modulus ||
+                            //op.Value == Operator.Exponentiate ||
+                            op.Value == Operator.Ampersand ||
+                            op.Value == Operator.BOr ||
+                            op.Value == Operator.BXor ||
+                            op.Value == Operator.BShiftLeft ||
+                            op.Value == Operator.BShiftRight
                     )
             )
             {
@@ -848,27 +858,52 @@ namespace GoPowered.Lang.Parser
                     if (Now([(null, Operator.Plus.ToToken())], true))
                     {
                         ConsumeNewlines();
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Add, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                        math.Members.Add(new MathMember(MathMember.Arithmetic.Add, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                     }
                     else if (Now([(null, Operator.Minus.ToToken())], true))
                     {
                         ConsumeNewlines();
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Subtract, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                        math.Members.Add(new MathMember(MathMember.Arithmetic.Subtract, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                     }
                     else if (Now([(null, Operator.Star.ToToken())], true))
                     {
                         ConsumeNewlines();
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Multiply, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                        math.Members.Add(new MathMember(MathMember.Arithmetic.Multiply, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                     }
                     else if (Now([(null, Operator.Slash.ToToken())], true))
                     {
                         ConsumeNewlines();
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Divide, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                        math.Members.Add(new MathMember(MathMember.Arithmetic.Divide, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                     }
                     else if (Now([(null, Operator.Modulus.ToToken())], true))
                     {
                         ConsumeNewlines();
-                        math.Members.Add(new MathMember(MathMember.TypeEnum.Modulus, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                        math.Members.Add(new MathMember(MathMember.Arithmetic.Modulus, (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                    }
+                    else if (Now([(null, Operator.Ampersand.ToToken())], true))
+                    {
+                        ConsumeNewlines();
+                        math.Members.Add(new MathMember(MathMember.Bitwise.And, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                    }
+                    else if (Now([(null, Operator.BOr.ToToken())], true))
+                    {
+                        ConsumeNewlines();
+                        math.Members.Add(new MathMember(MathMember.Bitwise.Or, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                    }
+                    else if (Now([(null, Operator.BXor.ToToken())], true))
+                    {
+                        ConsumeNewlines();
+                        math.Members.Add(new MathMember(MathMember.Bitwise.Xor, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                    }
+                    else if (Now([(null, Operator.BShiftLeft.ToToken())], true))
+                    {
+                        ConsumeNewlines();
+                        math.Members.Add(new MathMember(MathMember.Bitwise.ShiftLeft, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
+                    }
+                    else if (Now([(null, Operator.BShiftRight.ToToken())], true))
+                    {
+                        ConsumeNewlines();
+                        math.Members.Add(new MathMember(MathMember.Bitwise.ShiftRight, (Expression)ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit, constant: constant)));
                     }
                     else
                     {
