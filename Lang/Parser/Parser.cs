@@ -670,16 +670,22 @@ namespace GoPowered.Lang.Parser
                 }
                 else
                 {
-                    var initial = ParseExpression();
-                    Require(Operator.Semicolon.ToToken(), "';'");
+                    IAnyExpression? initial = null;
 
-                    var cond = ParseExpression();
+                    if (variables != null)
+                    {
+                        initial = ParseExpression();
+                        Require(Operator.Semicolon.ToToken(), "';'");
+                    }
+
+                    var cond = ParseExpression(allowInit: false);
                     if (cond is not Condition)
                         throw new ParserError("Expected a condition");
 
-                    Require(Operator.Semicolon.ToToken(), "';'");
-
                     IStatement? after = null;
+
+                    if (initial != null)
+                        Require(Operator.Semicolon.ToToken(), "';'");
 
                     if (!Now([(null, Operator.LCurly.ToToken())], false))
                     {
