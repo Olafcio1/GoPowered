@@ -1,16 +1,16 @@
 ﻿using GoPowered.Lang.Lexer.Token;
 using GoPowered.Lang.Parser.Token.Object;
-using GoPowered.Lang.Parser.Type;
 
 namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        protected partial PTTypeInterface ParseTypeInterface(string name, Dictionary<string, IType>? generics)
+        protected partial void ParseTypeInterface(out Dictionary<string, FunctionSignature> Methods, out List<string> Inherits)
         {
             Require(Operator.LCurly.ToToken(), "'{'");
 
-            var Interface = new PTTypeInterface(name, [], [], generics);
+            Inherits = [];
+            Methods = [];
 
             while (true)
             {
@@ -22,16 +22,14 @@ namespace GoPowered.Lang.Parser
                 if (!Now([("literal", null), (null, Operator.LParen.ToToken())], false))
                 {
                     // Interface Inherit
-                    Interface.Inherits.Add(Consume<LTLiteral>().Value);
+                    Inherits.Add(Consume<LTLiteral>().Value);
                     continue;
                 }
 
                 var fName = Consume<LTLiteral>().Value;
                 ParseFunctionSignature(out var fArgs, out var fReturns, out var fGenerics);
-                Interface.Methods[fName] = new FunctionSignature(fName, fArgs, fReturns, fGenerics);
+                Methods[fName] = new FunctionSignature(fName, fArgs, fReturns, fGenerics);
             }
-
-            return Interface;
         }
     }
 }

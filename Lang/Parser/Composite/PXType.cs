@@ -127,6 +127,12 @@ namespace GoPowered.Lang.Parser
 
                 return new StructType(fields, inherits);
             }
+            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+            {
+                ParseTypeInterface(out var methods, out var inherits);
+
+                return new InterfaceType(methods, inherits);
+            }
             else if (Now([(null, Operator.Star.ToToken())], true))
             {
                 var type = ParseType();

@@ -87,8 +87,12 @@ namespace GoPowered.Lang.Parser
             {
                 ParseTypeStruct(out var fields, out var inherits);
                 return new PTTypeStruct(name, fields, inherits, generics);
-            } else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
-                return ParseTypeInterface(name, generics);
+            }
+            else if (Now([(null, Keyword.INTERFACE.ToToken())], true))
+            {
+                ParseTypeInterface(out var methods, out var inherits);
+                return new PTTypeInterface(name, methods, inherits, generics);
+            }
             else if (ParseType_out(out IType? type, optional: true))
                 return new PTTypeClone(name, type!, generics);
             else if (Now([(null, Operator.Set.ToToken())], true))
@@ -128,7 +132,7 @@ namespace GoPowered.Lang.Parser
 
         protected partial void ParseTypeStruct(out Dictionary<string, IType> Fields, out List<string> Inherits);
 
-        protected partial PTTypeInterface ParseTypeInterface(string name, Dictionary<string, IType>? generics);
+        protected partial void ParseTypeInterface(out Dictionary<string, FunctionSignature> Methods, out List<string> Inherits);
 
         protected bool ParseType_out(out IType? type, bool optional)
         {
