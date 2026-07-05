@@ -1341,6 +1341,46 @@ namespace GoPowered.Lang.Parser
                 var body = ParseCode();
                 return new ETClosure(args, body, returns, generics);
             }
+            else if (Now([(null, Keyword.MAP.ToToken())], true))
+            {
+                Require(Operator.LSquare.ToToken(), "'['");
+                var keyType = ParseType()!;
+                Require(Operator.RSquare.ToToken(), "']'");
+
+                var valueType = ParseType()!;
+                var token = new ETMap(keyType, valueType, []);
+
+                Require(Operator.LCurly.ToToken(), "'{'");
+
+                var comma = false;
+                var newlines = false;
+
+                while (true)
+                {
+                    ConsumeNewlines(ref newlines);
+
+                    if (!newlines && Now([(null, Operator.RCurly.ToToken())], true))
+                        break;
+                    else if (comma)
+                        Require(Operator.Comma.ToToken(), "','");
+                    else comma = true;
+
+                    ConsumeNewlines(ref newlines);
+
+                    if (Now([(null, Operator.RCurly.ToToken())], true))
+                        break;
+
+                    ConsumeNewlines(ref newlines);
+
+                    var key = ParseExpression();
+                    Require(Operator.Colon.ToToken(), "':'");
+                    var value = ParseExpression();
+
+                    token.Values[key] = value;
+                }
+
+                return token;
+            }
             else
             {
                 // Should this error message be 'Expected an expression' instead?
