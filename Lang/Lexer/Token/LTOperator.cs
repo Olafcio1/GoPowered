@@ -54,7 +54,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description(">>=")] BShiftRightSet,
         [Description("<<=")] BShiftLeftSet,
         // Pointers and channels
-        [Description("<-")] Receive,
+        [Description("<-")] Transmit,
         // Miscellaneous
         //[Description("_")] Underscore,  //-- checking temporary moved to the parser, TODO make a special case or a custom token for it
         [Description(":=")] Assign,

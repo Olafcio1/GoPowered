@@ -32,6 +32,8 @@ namespace GoPowered.Lang.Parser
                 return ParseFor();
             else if (Now([(null, Keyword.IF.ToToken())], true))
                 return ParseIf();
+            else if (Now([(null, Keyword.CLOSE.ToToken())], true))
+                return ParseClose();
             else
                 return ParseExpressionStmt();
         }
@@ -93,6 +95,10 @@ namespace GoPowered.Lang.Parser
                         throw new ParserError("Expected a reference before '--'");
                     else return new StmtSet(expr, new MathExpression(expr, [new MathMember(MathMember.Arithmetic.Subtract, new Expression(new ESTInteger(1), null, 0, Singular: true))]));
                 }
+                else if (Now([(null, Operator.Transmit.ToToken())], true))
+                {
+                    return new StmtChannelSend(expr, ParseExpression());
+                }
                 else
                 {
                     var operations = new Dictionary<Operator, MathMember.IOperation>
@@ -138,19 +144,13 @@ namespace GoPowered.Lang.Parser
         }
 
         private partial StmtIf ParseIf();
-
         private partial IStatement ParseFor();
-
         private partial StmtReturn ParseReturn();
-
         private partial StmtGo ParseGo();
-
         private partial StmtDefer ParseDefer();
-
         private partial StmtConst ParseConst();
-
         private partial IStatement ParseVar();
-
         private partial IStatement ParseAssignment();
+        private partial StmtClose ParseClose();
     }
 }

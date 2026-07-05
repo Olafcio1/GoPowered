@@ -48,6 +48,7 @@ namespace GoPowered.Lang.Lexer.Token
         // Special Functions
         //[Description("panic")] PANIC,   | panic may accept a parameter so its a function like any other
         [Description("make")] MAKE,
+        [Description("close")] CLOSE,
         // Special Values
         [Description("nil")] NIL,
         [Description("true")] TRUE,

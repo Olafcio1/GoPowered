@@ -146,6 +146,10 @@ namespace GoPowered.Lang.Parser
             {
                 return AnyType.INSTANCE;
             }
+            else if (Now([(null, Keyword.CHANNEL.ToToken())], true))
+            {
+                return new ChannelType(ParseType()!);
+            }
             else if (optional)
             {
                 return null;
