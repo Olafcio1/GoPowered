@@ -12,7 +12,7 @@ namespace GoPowered.Lang.Parser
     public partial class Parser
     {
         private partial bool Assigning();
-        private partial bool Setting();
+        private partial bool Setting(int i = 0);
 
         protected partial IStatement ParseStatement()
         {
@@ -50,7 +50,7 @@ namespace GoPowered.Lang.Parser
                         throw new ParserError("Expected a reference before '='");
                     else return new StmtSet(expr, ParseExpression());
                 }
-                else if (Setting())
+                else if (Setting(-1))
                 {
                     if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                         throw new ParserError("Expected a reference before '='");

@@ -27,10 +27,8 @@ namespace GoPowered.Lang.Parser
             return false;
         }
 
-        private partial bool Setting()
+        private partial bool Setting(int i = 0)
         {
-            var i = -1;
-
             while (!ReachedEOF(i + 2))
             {
                 if (Peek(i++) is not LTLiteral)

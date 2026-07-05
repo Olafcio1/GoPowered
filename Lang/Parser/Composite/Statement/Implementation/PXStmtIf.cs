@@ -48,7 +48,7 @@ namespace GoPowered.Lang.Parser
 
                 var branch = new Branch();
 
-                if (Assigning())
+                if (Assigning() || Setting())
                 {
                     branch.PreCond = ParseStatement();
                     Require(Operator.Semicolon.ToToken(), "';'");
