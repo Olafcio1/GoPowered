@@ -1019,7 +1019,12 @@ namespace GoPowered.Lang.Parser
 
             while (true)
             {
-                if (Now([(null, Operator.Dot.ToToken())], true))
+                if (Now([(null, Operator.Dot.ToToken()), (null, Operator.LParen.ToToken())], true))
+                {
+                    parts.Add(new EPCast(ParseType()!));
+                    Require(Operator.RParen.ToToken(), "')'");
+                }
+                else if (Now([(null, Operator.Dot.ToToken())], true))
                 {
                     parts.Add(new EPMember(Consume<LTLiteral>().Value));
                 }
@@ -1217,7 +1222,7 @@ namespace GoPowered.Lang.Parser
                 var literal = Consume<LTLiteral>().Value;
                 return new ETReference(literal);
             }
-            else if (Now([("keyword", null)], false) && IsCastableType(((LTKeyword)Peek(0)).Value))
+            else if (Now([("keyword", null)], false) && IsConvertableType(((LTKeyword)Peek(0)).Value))
             {
                 var name = Consume<LTKeyword>().Value.ToString().ToLower();
                 //Console.WriteLine(name);
@@ -1226,7 +1231,7 @@ namespace GoPowered.Lang.Parser
                 var value = ParseExpression(allowInit: allowInit, constant: constant);
                 Require(Operator.RParen.ToToken(), "')'");
 
-                return new ETCast(name, value);
+                return new ETConvert(name, value);
             }
             else if (Now([(null, Operator.LParen.ToToken())], true))
             {
@@ -1260,7 +1265,7 @@ namespace GoPowered.Lang.Parser
             }
         }
 
-        protected static bool IsCastableType(Keyword kw)
+        protected static bool IsConvertableType(Keyword kw)
         {
             return (kw == Keyword.CHAR || 
                     kw == Keyword.INT ||
