@@ -11,9 +11,9 @@ namespace GoPowered.Lang.Parser
         private partial bool ParseCast(List<IExpressionPart> parts);
         private partial bool ParseMember(List<IExpressionPart> parts);
         private partial bool ParseCall(List<IExpressionPart> parts);
-        private partial bool ParseNew(List<IExpressionPart> parts, ref List<IType>? generics);
+        private partial bool ParseNew(List<IExpressionPart> parts);
 
-        protected bool ParseSquare(List<IExpressionPart> parts, ref List<IType>? generics, bool allowInit)
+        protected bool ParseSquare(List<IExpressionPart> parts, bool allowInit)
         {
             if (Now([(null, Operator.LSquare.ToToken())], true))
             {
@@ -30,95 +30,54 @@ namespace GoPowered.Lang.Parser
                     return true;
                 }
 
-                IAnyExpression expr;
-
                 var ind = this.index;
 
-                try
+                IAnyExpression? expr;
+
+                try                 { expr = ParseExpression(); }
+                catch (ParserError) { expr = null;              }
+
+                int? ind1 = this.index;
+
+                if (!Now([(null, Operator.RSquare.ToToken())], false))
                 {
-                    expr = ParseExpression();
-                }
-                catch (ParserError)
-                {
-                    if (!allowInit)
-                        throw;
-
-                    var failing = this.index;
-                    this.index = ind;
-
-                    var type = ParseType(true) ??
-                               throw new ParserError("Expected expression (map/list access) or type (secondary parameters)");
-
-                    var orig = generics;
-                    var point = this.index;
-                    var repeated = (generics != null);
-
-                    generics = [type];
-
-                    while (true)
+                    if (Now([(null, Operator.Colon.ToToken())], true))
                     {
-                        if (Now([(null, Operator.RSquare.ToToken())], true))
-                            break;
-                        else Require(Operator.Comma.ToToken(), "','");
+                        var from = expr;
+                        var to = Now([(null, Operator.RSquare.ToToken())], false)
+                                    ? null
+                                    : ParseExpression();
 
-                        generics.Add(ParseType()!);
+                        parts.Add(new EPSlice(from, to));
+                        Require(Operator.RSquare.ToToken(), "']'");
+
+                        return true;
                     }
 
-                    if (!Now([(null, Operator.LCurly.ToToken())], false))
-                    {
-                        generics = orig;
-                        this.index = failing;
-                        throw;
-                    }
-
-                    if (repeated)
-                    {
-                        this.index = point;
-                        throw new ParserError("Type parameters have already been provided");
-                    }
-
-                    return true;
+                    expr = null;
+                    ind1 = null;
                 }
 
-                if (Peek(0) is LTOperator op && (op.Value == Operator.Comma || op.Value == Operator.LCurly) && allowInit)
+                this.index = ind;
+
+                IType? type;
+
+                try                 { type = ParseType(true); }
+                catch (ParserError) { type = null;            }
+
+                if (!Now([(null, Operator.RSquare.ToToken())], false))
+                    type = null;
+
+                if (expr == null && type == null)
                 {
                     this.index = ind;
-
-                    if (generics != null)
-                        throw new ParserError("Type parameters have already been provided");
-
-                    generics = [];
-
-                    var comma = false;
-
-                    while (true)
-                    {
-                        if (Now([(null, Operator.RSquare.ToToken())], true))
-                            break;
-                        else if (comma)
-                            Require(Operator.Comma.ToToken(), "','");
-                        else comma = true;
-
-                        generics.Add(ParseType()!);
-                    }
-
-                    return true;
+                    throw new ParserError("Expected expression (map/list access) or type (secondary parameters)");
                 }
 
-                if (Now([(null, Operator.Colon.ToToken())], true))
-                {
-                    var from = expr;
-                    var to = Now([(null, Operator.RSquare.ToToken())], false)
-                                ? null
-                                : ParseExpression();
+                if (ind1 != null && ind1 > this.index)
+                    this.index = (int) ind1;
 
-                    parts.Add(new EPSlice(from, to));
-                }
-                else
-                {
-                    parts.Add(new EPAccess(expr));
-                }
-
+                parts.Add(new EPSquare(expr, type));
                 Require(Operator.RSquare.ToToken(), "']'");
 
                 return true;
@@ -150,17 +109,15 @@ namespace GoPowered.Lang.Parser
             var target = ParseExpressionTarget(allowInit: allowInit, constant: constant);
             var parts = new List<IExpressionPart>();
 
-            List<IType>? generics = null;
-
             #pragma warning disable CS0642
 
             while (true)
             {
                 if (ParseCast(parts));
                 else if (ParseMember(parts));
-                else if (!constant && ParseSquare(parts, ref generics, allowInit));
+                else if (!constant && ParseSquare(parts, allowInit));
                 else if (!constant && ParseCall(parts));
-                else if (allowInit && !constant && ParseNew(parts, ref generics));
+                else if (allowInit && !constant && ParseNew(parts));
                 else
                 {
                     break;

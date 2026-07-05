@@ -1,4 +1,6 @@
-﻿namespace GoPowered.Lang.Parser.Token.Expr.Part
+﻿using GoPowered.Lang.Parser.Type;
+
+namespace GoPowered.Lang.Parser.Token.Expr.Part
 {
-    public record EPAccess(IAnyExpression Member) : IExpressionPart;
+    public record EPSquare(IAnyExpression? Access, IType? Type) : IExpressionPart;
 }

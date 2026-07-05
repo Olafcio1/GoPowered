@@ -124,7 +124,7 @@ namespace GoPowered.Lang.Parser
 
                 if (expr.Singular || expr.Parts!.Count == 0)
                     throw new ParserError("Expression statement with no parts");
-                else if (expr.Parts[^1] is EPAccess || expr.Parts[^1] is EPMember)
+                else if (expr.Parts[^1] is EPSquare || expr.Parts[^1] is EPMember)
                     throw new ParserError("Expression statement ends with unnecessary element/member access");
                 else if (expr.Parts[^1] is EPSlice)
                     throw new ParserError("Expression statement ends with unnecessary slice");

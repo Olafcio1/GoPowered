@@ -2,13 +2,12 @@
 using GoPowered.Lang.Parser.Token;
 using GoPowered.Lang.Parser.Token.Expr;
 using GoPowered.Lang.Parser.Token.Expr.Part;
-using GoPowered.Lang.Parser.Type;
 
 namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        private partial bool ParseNew(List<IExpressionPart> parts, ref List<IType>? generics)
+        private partial bool ParseNew(List<IExpressionPart> parts)
         {
             if (Now([(null, Operator.LCurly.ToToken())], true))
             {
@@ -34,8 +33,7 @@ namespace GoPowered.Lang.Parser
                     }
                 });
 
-                parts.Add(new EPNew(positional, keyword, generics));
-                generics = null;
+                parts.Add(new EPNew(positional, keyword));
 
                 return true;
             }

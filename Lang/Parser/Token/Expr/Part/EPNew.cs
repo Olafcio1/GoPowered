@@ -4,7 +4,6 @@ namespace GoPowered.Lang.Parser.Token.Expr.Part
 {
     public record EPNew(
         List<IAnyExpression> Positional,
-        Dictionary<string, IAnyExpression> Keyword,
-        List<IType>? Generics
+        Dictionary<string, IAnyExpression> Keyword
     ) : IExpressionPart;
 }
