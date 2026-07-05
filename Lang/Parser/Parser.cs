@@ -1369,7 +1369,21 @@ namespace GoPowered.Lang.Parser
                             else if (Now([("newline", null)], true))
                                 continue;
 
-                            output.Add(new PTImport(Consume<LTString>().Value));
+                            if (Now([("literal", null)], false))
+                            {
+                                var alias = Consume<LTLiteral>().Value;
+                                var package = Consume<LTString>().Value;
+
+                                if (alias == "_")
+                                    alias = null;
+
+                                output.Add(new PTImportAs(package, alias));
+                            }
+                            else
+                            {
+                                output.Add(new PTImport(Consume<LTString>().Value));
+                            }
+
                             Require(LTNewLine.INSTANCE, "newline");
 
                             empty = false;
