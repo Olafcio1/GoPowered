@@ -12,6 +12,7 @@ namespace GoPowered.Lang.Parser
         protected partial ETClosure? ParseClosure();
         protected partial ETImplicitStruct? ParseImplicitStruct();
         protected partial ETMap? ParseMap();
+        protected partial ETSlice? ParseSlice();
 
         protected partial IExpressionTarget ParseExpressionTarget(bool allowInit = true, bool constant = false)
         {
@@ -25,6 +26,7 @@ namespace GoPowered.Lang.Parser
             else if ((target = ParseClosure()) != null);
             else if ((target = ParseImplicitStruct()) != null);
             else if ((target = ParseMap()) != null);
+            else if ((target = ParseSlice()) != null);
             else
                 // Should this error message be 'Expected an expression' instead?
                 throw new ParserError("Expected expression target");
