@@ -37,7 +37,12 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.SELECT.ToToken())], true))
                 return ParseSelect();
             else if (Now([(null, Keyword.SWITCH.ToToken())], true))
-                return ParseSwitch();
+            {
+                if (Now([(null, Operator.LCurly.ToToken())], false))
+                    return ParseSwitch();
+                else
+                    return ParseValueSwitch();
+            }
             else
                 return ParseExpressionStmt();
         }
@@ -158,5 +163,6 @@ namespace GoPowered.Lang.Parser
         private partial StmtClose ParseClose();
         private partial StmtSelect ParseSelect();
         private partial StmtSwitch ParseSwitch();
+        private partial StmtSwitchValue ParseValueSwitch();
     }
 }
