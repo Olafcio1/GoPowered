@@ -53,6 +53,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("true")] TRUE,
         [Description("false")] FALSE,
         // Built-in Types
+        [Description("any")] ANY,
         [Description("string")] STRING,
         [Description("rune")] RUNE,
         [Description("bool")] BOOL,

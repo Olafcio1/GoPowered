@@ -138,6 +138,10 @@ namespace GoPowered.Lang.Parser
                 var type = ParseType();
                 return new PointerType(type!);
             }
+            else if (Now([(null, Keyword.ANY.ToToken())], true))
+            {
+                return AnyType.INSTANCE;
+            }
             else if (optional)
             {
                 return null;
