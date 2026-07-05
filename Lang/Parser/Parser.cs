@@ -101,15 +101,15 @@ namespace GoPowered.Lang.Parser
                 Require(Operator.RParen.ToToken(), "')'");
             }
 
-            ParseFunctionSignature(out var name, out var args, out var returns, out var generics);
+            var name = Consume<LTLiteral>().Value;
+            ParseFunctionSignature(out var args, out var returns, out var generics);
 
             var body = ParseCode();
             return new PTFunction(name, args, body, returns, parent, generics);
         }
 
-        protected void ParseFunctionSignature(out string name, out List<Argument> args, out List<ReturnValue>? returns, out Dictionary<string, IType>? generics)
+        protected void ParseFunctionSignature(out List<Argument> args, out List<ReturnValue>? returns, out Dictionary<string, IType>? generics)
         {
-            name = Consume<LTLiteral>().Value;
             args = new List<Argument>();
 
             generics = ParseDefGenerics();
@@ -288,8 +288,9 @@ namespace GoPowered.Lang.Parser
                     continue;
                 }
 
-                ParseFunctionSignature(out var fName, out var fArgs, out var fReturns, out var fGenerics);
-                Interface.Methods.Add(new FunctionSignature(fName, fArgs, fReturns, fGenerics));
+                var fName = Consume<LTLiteral>().Value;
+                ParseFunctionSignature(out var fArgs, out var fReturns, out var fGenerics);
+                Interface.Methods[fName] = new FunctionSignature(fName, fArgs, fReturns, fGenerics);
             }
 
             return Interface;
@@ -1326,6 +1327,13 @@ namespace GoPowered.Lang.Parser
                 }
 
                 return new ETMake(type, args);
+            }
+            else if (Now([(null, Keyword.FUNCTION.ToToken())], true))
+            {
+                ParseFunctionSignature(out var args, out var returns, out var generics);
+
+                var body = ParseCode();
+                return new ETClosure(args, body, returns, generics);
             }
             else
             {
