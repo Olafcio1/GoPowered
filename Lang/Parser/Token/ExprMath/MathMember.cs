@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Parser.Token.ExprMath
 {
     public record MathMember(
         MathMember.IOperation Type,
-        Expression Value
+        IAnyExpression Value
     )
     {
         public interface IOperation : IAvoidSerialization;

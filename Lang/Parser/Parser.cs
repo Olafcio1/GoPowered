@@ -849,7 +849,7 @@ namespace GoPowered.Lang.Parser
                             {
                                 if (expr.Parts != null && expr.Parts.Count > 0 && expr.Parts[^1] is EPCall)
                                     throw new ParserError($"Expected a reference before '{@operator.ToCode()}'");
-                                else return new StmtSet(expr, new MathExpression(expr, [new MathMember(operation, ParseObjectExpression())]));
+                                else return new StmtSet(expr, new MathExpression(expr, [new MathMember(operation, ParseExpression(allowInit: false))]));
                             }
                         }
                     }
