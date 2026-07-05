@@ -13,7 +13,18 @@ namespace GoPowered.Lang.Parser
 
             Require(Operator.LParen.ToToken(), "'('");
 
+            int ind = this.index;
+
+            try                 {                   ParseUnnamedArguments(args); }
+            catch (ParserError) { this.index = ind; ParseNamedArguments(args);   }
+
+            returns = ParseReturnTypes();
+        }
+
+        private void ParseNamedArguments(List<Argument> args)
+        {
             var index = 0;
+
             while (true)
             {
                 if (Now([(null, Operator.RParen.ToToken())], true))
@@ -43,8 +54,28 @@ namespace GoPowered.Lang.Parser
             foreach (var arg in args)
                 if (arg.Type == null)
                     throw new ParserError("Missing inherited parameter type");
+        }
 
-            returns = ParseReturnTypes();
+        private void ParseUnnamedArguments(List<Argument> args)
+        {
+            var index = 0;
+
+            while (true)
+            {
+                if (Now([(null, Operator.RParen.ToToken())], true))
+                    break;
+                else if (index++ != 0)
+                    Require(Operator.Comma.ToToken(), "','");
+
+                var ellipsis = Now([(null, Operator.Ellipsis.ToToken())], true);
+                var aType = ParseType()!;
+
+                args.Add(new Argument(
+                    null,
+                    aType,
+                    ellipsis
+                ));
+            }
         }
 
         private List<ReturnValue>? ParseReturnTypes()

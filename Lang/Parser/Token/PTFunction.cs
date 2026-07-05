@@ -13,7 +13,7 @@ namespace GoPowered.Lang.Parser.Token
     ) : IParserToken;
 
     public class Argument(
-        string Name,
+        string? Name,
         IType Type,
         bool Rest
     )
