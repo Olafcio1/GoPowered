@@ -621,17 +621,18 @@ namespace GoPowered.Lang.Parser
                     {
                         i += 2;
                         continue;
-                    } else if (
-                            Peek(i) is LTOperator op2 &&
+                    }
+                    else if (
+                            Peek(i) is LTLiteral &&
+                            Peek(i+1) is LTOperator op2 &&
                             op2.Value == Operator.Assign
                     )
                     {
-                        i += 1;
+                        i += 2;
                         collectVariables = true;
-                    } else if (
-                            Peek(i++) is LTOperator op3 &&
-                            op3.Value == Operator.RCurly
-                    )
+                        break;
+                    }
+                    else
                     {
                         break;
                     }
