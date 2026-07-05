@@ -80,9 +80,7 @@ namespace GoPowered.Lang.Parser
                     Require(Operator.Semicolon.ToToken(), "';'");
                 }
 
-                var cond = ParseExpression(allowInit: false);
-                if (cond is not Condition)
-                    throw new ParserError("Expected a condition");
+                var cond = ParseCondition(allowInit: false);
 
                 IStatement? after = null;
 
