@@ -768,11 +768,11 @@ namespace GoPowered.Lang.Parser
                             [Operator.DivideSet] = MathMember.Arithmetic.Divide,
                             [Operator.ModulusSet] = MathMember.Arithmetic.Modulus,
                             // Bitwise
-                            [Operator.Ampersand] = MathMember.Bitwise.And,
-                            [Operator.BOr] = MathMember.Bitwise.Or,
-                            [Operator.BXor] = MathMember.Bitwise.Xor,
-                            [Operator.BShiftLeft] = MathMember.Bitwise.ShiftLeft,
-                            [Operator.BShiftRight] = MathMember.Bitwise.ShiftRight
+                            [Operator.BAndSet] = MathMember.Bitwise.And,
+                            [Operator.BOrSet] = MathMember.Bitwise.Or,
+                            [Operator.BXorSet] = MathMember.Bitwise.Xor,
+                            [Operator.BShiftLeftSet] = MathMember.Bitwise.ShiftLeft,
+                            [Operator.BShiftRightSet] = MathMember.Bitwise.ShiftRight
                         };
 
                         foreach (var (@operator, operation) in operations)
