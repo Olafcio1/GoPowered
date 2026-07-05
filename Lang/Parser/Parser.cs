@@ -685,7 +685,9 @@ namespace GoPowered.Lang.Parser
 
                     var effect = ParseCode();
 
-                    return new StmtForLoop(initial, (Condition) cond, after, effect);
+                    return new StmtForLoop(variables == null
+                                                ? null
+                                                : new StmtExtractAssign(variables, initial, null), (Condition) cond, after, effect);
                 }
             }
             else if (Now([(null, Keyword.IF.ToToken())], true))
