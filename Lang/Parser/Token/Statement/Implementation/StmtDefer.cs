@@ -3,5 +3,5 @@
     /**
      * Used to defer a function call to the return time.
      */
-    public record StmtDefer(IAnyExpression Expr) : IStatement;
+    public record StmtDefer(IStatement Expr) : IStatement;
 }
