@@ -1,4 +1,5 @@
 ﻿using GoPowered.Lang.Lexer.Token;
+using GoPowered.Lang.Parser.Token;
 using GoPowered.Lang.Parser.Token.Expr.Target;
 
 namespace GoPowered.Lang.Parser
@@ -9,18 +10,29 @@ namespace GoPowered.Lang.Parser
         {
             if (Now([(null, Operator.LCurly.ToToken())], true))
             {
-                var token = new ETImplicitStruct([]);
+                var positional = new List<IAnyExpression>();
+                var keyword = new Dictionary<string, IAnyExpression>();
 
                 HandleList(Operator.RCurly, () =>
                 {
-                    var key = Consume<LTLiteral>().Value;
-                    Require(Operator.Colon.ToToken(), "':'");
-                    var value = ParseExpression();
+                    if (Now([("literal", null), (null, Operator.Colon.ToToken())], false))
+                    {
+                        var name = Consume<LTLiteral>().Value;
+                        Require(Operator.Colon.ToToken(), "':'");
+                        var value = ParseExpression();
 
-                    token.Fields[key] = value;
+                        keyword[name] = value;
+                    }
+                    else
+                    {
+                        if (keyword.Count > 0)
+                            throw new ParserError("Cannot provide positional parameters after keyword parameters");
+
+                        positional.Add(ParseExpression());
+                    }
                 });
 
-                return token;
+                return new ETImplicitStruct(positional, keyword);
             }
 
             return null;
