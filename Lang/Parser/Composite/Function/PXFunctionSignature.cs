@@ -44,15 +44,10 @@ namespace GoPowered.Lang.Parser
                 if (arg.Type == null)
                     throw new ParserError("Missing inherited parameter type");
 
-            returns = null;
-
-            if (!Now([(null, Operator.LCurly.ToToken())], false) && !Now([("newline", null)], false))
-            {
-                returns = ParseReturnTypes();
-            }
+            returns = ParseReturnTypes();
         }
 
-        private List<ReturnValue> ParseReturnTypes()
+        private List<ReturnValue>? ParseReturnTypes()
         {
             List<ReturnValue> returns = [];
 
@@ -75,9 +70,13 @@ namespace GoPowered.Lang.Parser
             }
             else
             {
+                var type = ParseType(true);
+                if (type == null)
+                    return null;
+
                 returns.Add(new ReturnValue(
                     null,
-                    ParseType()!
+                    type!
                 ));
             }
 
