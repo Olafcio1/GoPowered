@@ -704,6 +704,12 @@ namespace GoPowered.Lang.Parser
 
                     var branch = new Branch();
 
+                    if (Assigning())
+                    {
+                        branch.PreCond = ParseStatement();
+                        Require(Operator.Semicolon.ToToken(), "';'");
+                    }
+
                     var expr = ParseExpression(allowInit: false);
                     var cond = expr is Condition cast
                                 ? cast
