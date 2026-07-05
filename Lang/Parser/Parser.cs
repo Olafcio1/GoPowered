@@ -149,7 +149,7 @@ namespace GoPowered.Lang.Parser
 
             returns = null;
 
-            if (!Now([(null, Operator.LCurly.ToToken())], false))
+            if (!Now([(null, Operator.LCurly.ToToken())], false) && !Now([("newline", null)], false))
             {
                 returns = [];
 
