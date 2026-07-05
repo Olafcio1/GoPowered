@@ -38,6 +38,10 @@ namespace GoPowered.Lang.Parser
             {
                 return PrimitiveType.RUNE;
             }
+            else if (Now([(null, Keyword.BYTE.ToToken())], true))
+            {
+                return PrimitiveType.BYTE;
+            }
             else if (Now([(null, Keyword.BOOL.ToToken())], true))
             {
                 return PrimitiveType.BOOL;

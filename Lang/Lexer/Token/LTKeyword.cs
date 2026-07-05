@@ -56,6 +56,7 @@ namespace GoPowered.Lang.Lexer.Token
         [Description("any")] ANY,
         [Description("string")] STRING,
         [Description("rune")] RUNE,
+        [Description("byte")] BYTE,
         [Description("bool")] BOOL,
         [Description("int")] INT,
         [Description("int64")] INT64,

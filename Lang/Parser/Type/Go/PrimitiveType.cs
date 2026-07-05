@@ -6,6 +6,7 @@
 
         public static readonly PrimitiveType STRING = new(Primitive.STRING);
         public static readonly PrimitiveType RUNE = new(Primitive.RUNE);
+        public static readonly PrimitiveType BYTE = new(Primitive.BYTE);
         public static readonly PrimitiveType BOOL = new(Primitive.BOOL);
         public static readonly PrimitiveType INT = new(Primitive.INT);
         public static readonly PrimitiveType INT64 = new(Primitive.INT64);
@@ -32,6 +33,7 @@
     {
         STRING,
         RUNE,
+        BYTE,
         BOOL,
         INT,
         INT64,
