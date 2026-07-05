@@ -266,6 +266,8 @@ namespace GoPowered.Lang.Parser
 
                 foreach (var fName in fNames)
                     Fields[fName] = fType!;
+
+                Require(LTNewLine.INSTANCE, "newline");
             }
         }
 
