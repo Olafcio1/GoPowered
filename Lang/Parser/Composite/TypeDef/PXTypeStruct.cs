@@ -38,7 +38,8 @@ namespace GoPowered.Lang.Parser
                 foreach (var fName in fNames)
                     Fields[fName] = fType!;
 
-                Require(LTNewLine.INSTANCE, "newline");
+                if (!Now([("newline", null)]) && !Now([(null, Operator.RCurly.ToToken())]))
+                    throw new ParserError("Expected a newline or '}'");
             }
         }
     }
