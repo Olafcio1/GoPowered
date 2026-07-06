@@ -1,5 +1,6 @@
 ﻿using GoPowered.Lang.Parser;
 using GoPowered.Lang.Parser.Token;
+using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Type;
 using GoPowered.Lang.Parser.Type.Go;
 
@@ -143,8 +144,10 @@ namespace GoPowered.Lang.Unparser
                               + (func.Returns == null
                                     ? null
                                     : HandleFuncReturns(func.Returns));
-            else if (type is InterfaceType)
-                return "interface{" + "\n}";
+            else if (type is InterfaceType @interface)
+                return "interface{" + HandleInherits(@interface.Inherits)
+                                    + HandleMethods(@interface.Methods)
+                                    + "\n}";
             else if (type is ListType list)
                 return "[]" + HandleType(list.ElementType);
             else if (type is MapType map)
@@ -154,8 +157,8 @@ namespace GoPowered.Lang.Unparser
             else if (type is PrimitiveType prim)
                 return prim.Primitive.ToString().ToLower();
             else if (type is StructType @struct)
-                return "struct{" + HandleStructInherits(@struct.Inherits)
-                                 + HandleStructFields(@struct.Fields) + "\n}";
+                return "struct{" + HandleInherits(@struct.Inherits)
+                                 + HandleFields(@struct.Fields) + "\n}";
             else if (type is UniqueType uniq)
                 return string.Join('.', uniq.Location) + (uniq.Generics == null
                                                             ? ""
@@ -254,7 +257,7 @@ namespace GoPowered.Lang.Unparser
             return value;
         }
 
-        protected static string HandleStructInherits(List<string> inherits)
+        protected static string HandleInherits(List<string> inherits)
         {
             var value = "";
 
@@ -264,7 +267,7 @@ namespace GoPowered.Lang.Unparser
             return value;
         }
 
-        protected static string HandleStructFields(Dictionary<string, IType> fields)
+        protected static string HandleFields(Dictionary<string, IType> fields)
         {
             var value = "";
 
@@ -272,6 +275,27 @@ namespace GoPowered.Lang.Unparser
                 value += "\n    " + name + "    " + HandleType(type);
 
             return value;
+        }
+
+        protected static string HandleMethods(Dictionary<string, FunctionSignature> methods)
+        {
+            var value = "";
+
+            foreach (var (name, type) in methods)
+                value += "\n    " + name + "    " + HandleFunctionSignature(type);
+
+            return value;
+        }
+
+        protected static string HandleFunctionSignature(FunctionSignature func)
+        {
+            return "func" + (func.Generics == null
+                    ? null
+                    : HandleFuncGenerics(func.Generics))
+              + HandleFuncArguments(func.Args)
+              + (func.Returns == null
+                    ? null
+                    : HandleFuncReturns(func.Returns));
         }
     }
 }
