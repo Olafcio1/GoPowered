@@ -18,7 +18,7 @@ namespace GoPowered.Lang.Parser.Token
         bool Rest
     )
     {
-        public string Name = Name;
+        public string? Name = Name;
         public IType Type = Type;
     }
 
