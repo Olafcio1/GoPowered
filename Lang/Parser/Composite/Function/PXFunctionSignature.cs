@@ -15,8 +15,8 @@ namespace GoPowered.Lang.Parser
 
             int ind = this.index;
 
-            try                 {                   ParseUnnamedArguments(args); }
-            catch (ParserError) { this.index = ind; ParseNamedArguments(args);   }
+            try                 {                                 ParseUnnamedArguments(args); }
+            catch (ParserError) { this.index = ind; args.Clear(); ParseNamedArguments(args);   }
 
             returns = ParseReturnTypes();
         }
