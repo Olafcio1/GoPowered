@@ -31,7 +31,7 @@ namespace GoPowered.Lang.Parser
             return token.Type();
         }
 
-        public void Parse()
+        public Parser Parse()
         {
             ConsumeNewlines();
 
@@ -53,6 +53,8 @@ namespace GoPowered.Lang.Parser
                 else
                     throw new ParserError("Expected a global statement");
             }
+
+            return this;
         }
 
         protected void ConsumeNewlines()

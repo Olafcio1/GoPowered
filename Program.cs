@@ -1,4 +1,5 @@
-﻿using GoPowered.PoweredLang.PoweredLexer;
+﻿using GoPowered.Lang.Unparser;
+using GoPowered.PoweredLang.PoweredLexer;
 using GoPowered.PoweredLang.PoweredParser;
 using System.Collections;
 using System.Text;
@@ -12,11 +13,10 @@ namespace GoPowered {
                 var path = args[1];
 
                 var lexed = new PoweredLexer(File.ReadAllText(path)).Lex();
-                var parser = new PoweredParser(lexed);
-                parser.Parse();
+                var parser = new PoweredParser(lexed).Parse();
+                var unparser = new Unparser(parser).Unparse();
 
-                Console.Write(lexed.Count);
-                Console.Write(Repr(parser.output));
+                Console.Write(unparser);
             } else {
                 Console.WriteLine("┌───────┤ GoPowered SDK ├───────┐");
                 Console.WriteLine("│                               │");
