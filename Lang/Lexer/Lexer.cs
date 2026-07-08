@@ -36,6 +36,7 @@ namespace GoPowered.Lang.Lexer
                 else if (LexOperator());
                 else if (LexLiteral());
                 else if (LexString());
+                else if (LexMulString());
                 else if (LexChar());
                 else if (Now('\r') || Now('\n'))
                     // Newlines
