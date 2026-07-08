@@ -20,6 +20,10 @@ namespace GoPowered.Lang.Unparser
                     {
                         output += HandleBreak(@break);
                     }
+                    else if (stmt is StmtContinue @continue)
+                    {
+                        output += HandleContinue(@continue);
+                    }
                     else
                     {
                         throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -35,5 +39,6 @@ namespace GoPowered.Lang.Unparser
         }
 
         protected partial string HandleBreak(StmtBreak stmt);
+        protected partial string HandleContinue(StmtContinue stmt);
     }
 }
