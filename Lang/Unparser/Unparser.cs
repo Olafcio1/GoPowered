@@ -16,7 +16,7 @@ namespace GoPowered.Lang.Unparser
             this.output = "";
         }
 
-        protected string TypeOf(IParserToken token)
+        protected string TypeOf(object token)
         {
             var text = token.GetType().Name;
             if (text.StartsWith("PT"))
