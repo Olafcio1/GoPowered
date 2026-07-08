@@ -39,6 +39,9 @@ namespace GoPowered.Lang.Lexer
                     else if (str_special.ContainsKey(nxt))
                         value += str_special.GetValueOrDefault(nxt);
                     else throw new LexerError("unrecognized \\" + nxt);
+                } else if (Now('\n'))
+                {
+                    throw new LexerError("non-multiline strings cannot contain newlines");
                 } else
                 {
                     value += Consume();
