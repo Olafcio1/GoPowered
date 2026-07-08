@@ -201,6 +201,8 @@ namespace GoPowered.Lang.Unparser
                 value += HandleType(val);
             }
 
+            value += "]";
+
             return value;
         }
 
