@@ -24,6 +24,8 @@ namespace GoPowered.Lang.Parser
         {
             this.index = 0;
             this.output = [];
+
+            IParserToken.CleanMetas();
         }
 
         protected override string TypeOf(ILexerToken token)
