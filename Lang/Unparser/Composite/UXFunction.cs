@@ -1,9 +1,12 @@
 ﻿using GoPowered.Lang.Parser.Token;
+using GoPowered.Lang.Parser.Token.Statement;
 
 namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
+        protected partial string HandleCode(List<IStatement> code);
+
         protected partial void HandleFunction(PTFunction func)
         {
             output += "\n";
@@ -31,7 +34,8 @@ namespace GoPowered.Lang.Unparser
                 output += HandleFuncReturns(func.Returns);
             }
 
-            output += ";";
+            output += " ";
+            output += HandleCode(func.Body);
         }
 
         private void HandleFuncParent(PTFunction func)
