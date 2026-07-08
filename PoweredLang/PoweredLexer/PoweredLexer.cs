@@ -30,5 +30,34 @@ namespace GoPowered.PoweredLang.PoweredLexer
             AddToken(token);
             return true;
         }
+
+        public override bool LexMulString()
+        {
+            if (!Now('`'))
+                return false;
+
+            var value = "";
+            while (true)
+            {
+                if (Now('`'))
+                {
+                    if (Now('`'))
+                    {
+                        value += "`";
+                    }
+                    else
+                    {
+                        AddToken(new LTString(value));
+                        return true;
+                    }
+                }
+                else
+                {
+                    value += Consume();
+                }
+            }
+
+            throw new LexerError("unterminated multiline string");
+        }
     }
 }
