@@ -82,6 +82,10 @@ namespace GoPowered.Lang.Unparser
                 {
                     HandleImportAs(importAs);
                 }
+                else if (tok is PTImportAll importAll)
+                {
+                    HandleImportAll(importAll);
+                }
             }
 
             return output;
@@ -104,6 +108,8 @@ namespace GoPowered.Lang.Unparser
         protected partial void HandleImport(PTImport import);
 
         protected partial void HandleImportAs(PTImportAs importAs);
+
+        protected partial void HandleImportAll(PTImportAll importAs);
 
         protected string HandleFunctionSignature(FunctionSignature func)
         {
