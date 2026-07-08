@@ -18,6 +18,9 @@ namespace GoPowered.PoweredLang.PoweredLexer.Token
     {
         // Datatype Definition
         [Description("object")] OBJECT,
+
+        // Variable Definition
+        [Description("final")] FINAL,
     }
 
     public static class VKeywordExtension

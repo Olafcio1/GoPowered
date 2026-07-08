@@ -9,6 +9,7 @@ using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Object.Generic;
 using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Token.Statement;
+using GoPowered.Lang.Parser.Token.Statement.Implementation;
 using GoPowered.Lang.Parser.Type;
 using System.Xml.Linq;
 
@@ -53,7 +54,13 @@ namespace GoPowered.Lang.Parser
                 else if (Now([(null, Keyword.VARIABLE.ToToken())]) || Now([(null, Keyword.CONST.ToToken())]))
                     output.Add(ParseStatement());
                 else
-                    throw new ParserError("Expected a global statement");
+                {
+                    var stmt = ParseStatement();
+                    if (stmt is not StmtAssign && stmt is not StmtMultiAssign && stmt is not StmtConst)
+                        throw new ParserError("Expected a global statement");
+
+                    output.Add(stmt);
+                }
             }
 
             return this;
@@ -213,7 +220,7 @@ namespace GoPowered.Lang.Parser
             return code;
         }
 
-        protected partial IStatement ParseStatement();
+        protected virtual partial IStatement ParseStatement();
 
         protected Expression ParseObjectExpression(bool allowInit = true)
         {

@@ -9,7 +9,7 @@ namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        private partial IStatement ParseVar()
+        protected partial IStatement ParseVar()
         {
             if (Now([(null, Operator.LParen.ToToken())], true))
             {

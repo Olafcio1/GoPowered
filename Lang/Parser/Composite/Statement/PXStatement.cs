@@ -14,7 +14,7 @@ namespace GoPowered.Lang.Parser
         private partial bool Assigning();
         private partial bool Setting(int i = 0);
 
-        protected partial IStatement ParseStatement()
+        protected virtual partial IStatement ParseStatement()
         {
             if (Assigning())
                 return ParseAssignment();
@@ -164,7 +164,7 @@ namespace GoPowered.Lang.Parser
         private partial StmtGo ParseGo();
         private partial StmtDefer ParseDefer();
         private partial StmtConst ParseConst();
-        private partial IStatement ParseVar();
+        protected partial IStatement ParseVar();
         private partial IStatement ParseAssignment();
         private partial StmtClose ParseClose();
         private partial StmtSelect ParseSelect();
