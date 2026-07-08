@@ -1,4 +1,5 @@
 ﻿using GoPowered.Lang.Parser.Token;
+using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Type;
 
@@ -61,6 +62,10 @@ namespace GoPowered.Lang.Unparser
                 {
                     HandleTypeClone(typeClone);
                 }
+                else if (tok is PTTypeStruct typeStruct)
+                {
+                    HandleTypeStruct(typeStruct);
+                }
             }
 
             return output;
@@ -71,6 +76,8 @@ namespace GoPowered.Lang.Unparser
         protected partial void HandleTypeAlias(PTTypeAlias typeAlias);
 
         protected partial void HandleTypeClone(PTTypeClone typeClone);
+
+        protected partial void HandleTypeStruct(PTTypeStruct typeStruct);
 
         protected partial string HandleType(IType type);
 
