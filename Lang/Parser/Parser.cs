@@ -308,6 +308,10 @@ namespace GoPowered.Lang.Parser
 
                                 output.Add(new PTImportAs(package, alias));
                             }
+                            else if (Now([(null, Operator.Dot.ToToken())], true))
+                            {
+                                output.Add(new PTImportAll(Consume<LTString>().Value));
+                            }
                             else
                             {
                                 output.Add(new PTImport(Consume<LTString>().Value));
