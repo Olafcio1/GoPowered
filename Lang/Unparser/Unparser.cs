@@ -70,6 +70,10 @@ namespace GoPowered.Lang.Unparser
                 {
                     HandleTypeInterface(typeInterface);
                 }
+                else if (tok is PTTypeGeneric typeGeneric)
+                {
+                    HandleTypeGeneric(typeGeneric);
+                }
             }
 
             return output;
@@ -84,6 +88,8 @@ namespace GoPowered.Lang.Unparser
         protected partial void HandleTypeStruct(PTTypeStruct typeStruct);
 
         protected partial void HandleTypeInterface(PTTypeInterface typeInterface);
+
+        protected partial void HandleTypeGeneric(PTTypeGeneric typeGeneric);
 
         protected partial string HandleType(IType type);
 
