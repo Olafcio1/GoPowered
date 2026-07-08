@@ -57,6 +57,10 @@ namespace GoPowered.Lang.Unparser
                 {
                     HandleTypeAlias(typeAlias);
                 }
+                else if (tok is PTTypeClone typeClone)
+                {
+                    HandleTypeClone(typeClone);
+                }
             }
 
             return output;
@@ -65,6 +69,8 @@ namespace GoPowered.Lang.Unparser
         protected partial void HandleFunction(PTFunction func);
 
         protected partial void HandleTypeAlias(PTTypeAlias typeAlias);
+
+        protected partial void HandleTypeClone(PTTypeClone typeClone);
 
         protected partial string HandleType(IType type);
 
