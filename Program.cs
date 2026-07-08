@@ -12,7 +12,8 @@ namespace GoPowered {
             if (args.Length == 2 && args[0] == "run") {
                 var path = args[1];
 
-                var lexed = new PoweredLexer(File.ReadAllText(path)).Lex();
+                var lexed = new PoweredLexer(File.ReadAllText(path)
+                                                 .ReplaceLineEndings("\n")).Lex();
                 var parser = new PoweredParser(lexed).Parse();
                 var unparser = new Unparser(parser).Unparse();
 
