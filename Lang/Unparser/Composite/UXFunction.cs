@@ -11,14 +11,8 @@ namespace GoPowered.Lang.Unparser
 
             if (func.Parent != null)
             {
-                output += "(";
-
-                var name = func.Parent.AssignName;
-                if (name != null)
-                    output += name + " ";
-
-                output += HandleType(func.Parent.Type);
-                output += ") ";
+                HandleFuncParent(func);
+                output += " ";
             }
 
             output += func.Name;
@@ -38,6 +32,19 @@ namespace GoPowered.Lang.Unparser
             }
 
             output += ";";
+        }
+
+        private void HandleFuncParent(PTFunction func)
+        {
+            output += "(";
+
+            var name = func.Parent!.AssignName;
+            if (name != null)
+                output += name + " ";
+
+            output += HandleType(func.Parent.Type);
+
+            output += ")";
         }
     }
 }
