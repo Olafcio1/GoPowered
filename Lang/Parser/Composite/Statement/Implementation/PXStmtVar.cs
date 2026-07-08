@@ -44,10 +44,14 @@ namespace GoPowered.Lang.Parser
             value = null;
             type = null;
 
-            if (!Now([(null, Operator.Set.ToToken())], false))
-                type = ParseType();
+            if (!Now([(null, Operator.Set.ToToken())], consume: false, skip: "newline", skipLimit: 1))
+            {
+                ConsumeNewlines();
 
-            if (Now([(null, Operator.Set.ToToken())], true))
+                type = ParseType();
+            }
+
+            if (Now([(null, Operator.Set.ToToken())], consume: true, skip: "newline", skipLimit: 1))
                 value = ParseExpression();
         }
     }

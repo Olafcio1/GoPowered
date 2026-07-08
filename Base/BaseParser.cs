@@ -60,12 +60,11 @@ namespace GoPowered.Base
 
         protected abstract string TypeOf(TokenType token);
 
-        protected bool Now((string?, TokenType?)[] types, bool consume = false)
+        protected bool Now((string?, TokenType?)[] types, bool consume = false, int index = 0)
         {
-            var i = 0;
             foreach (var (type, token) in types)
             {
-                var have = Peek(i++);
+                var have = Peek(index++);
                 var haveType = have!.GetType();
 
                 if (token == null)
@@ -95,9 +94,25 @@ namespace GoPowered.Base
             }
 
             if (consume)
-                index += i;
+                this.index += index;
 
             return true;
+        }
+
+        protected bool Now((string?, TokenType?)[] types, string skip, int skipLimit, bool consume = false)
+        {
+            var i = 0;
+
+            do
+            {
+                if (TypeOf(Peek(i)) != skip)
+                    break;
+
+                i++;
+            }
+            while (i < skipLimit);
+
+            return Now(types, consume: consume, index: i);
         }
     }
 }
