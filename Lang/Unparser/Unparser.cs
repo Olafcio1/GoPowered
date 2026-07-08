@@ -1,4 +1,5 @@
-﻿using GoPowered.Lang.Parser.Token;
+﻿using GoPowered.Lang.Parser;
+using GoPowered.Lang.Parser.Token;
 using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Object.Section;
 using GoPowered.Lang.Parser.Type;
@@ -15,28 +16,31 @@ namespace GoPowered.Lang.Unparser
             this.output = "";
         }
 
-        //protected override string TypeOf(IParserToken token)
-        //{
-        //    var text = token.GetType().Name.Substring(2);
-        //    var dashed = "";
+        protected string TypeOf(IParserToken token)
+        {
+            var text = token.GetType().Name;
+            if (text.StartsWith("PT"))
+                text = text.Substring(2);
 
-        //    for (int i = 0; i < text.Length; i++)
-        //    {
-        //        var ch = text[i];
+            var dashed = "";
 
-        //        if (ch >= 'A' && ch <= 'Z')
-        //        {
-        //            ch = Char.ToLower(ch);
+            for (int i = 0; i < text.Length; i++)
+            {
+                var ch = text[i];
 
-        //            if (i > 0)
-        //                dashed += "-";
-        //        }
+                if (ch >= 'A' && ch <= 'Z')
+                {
+                    ch = Char.ToLower(ch);
 
-        //        dashed += ch;
-        //    }
+                    if (i > 0)
+                        dashed += "-";
+                }
 
-        //    return dashed;
-        //}
+                dashed += ch;
+            }
+
+            return dashed;
+        }
 
         public string Unparse()
         {
@@ -85,6 +89,10 @@ namespace GoPowered.Lang.Unparser
                 else if (tok is PTImportAll importAll)
                 {
                     HandleImportAll(importAll);
+                }
+                else
+                {
+                    throw new UnparserError("Unexpected '" + TypeOf(tok) + "'");
                 }
             }
 
