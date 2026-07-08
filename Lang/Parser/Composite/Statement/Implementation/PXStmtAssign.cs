@@ -8,11 +8,15 @@ namespace GoPowered.Lang.Parser
     {
         private partial IStatement ParseAssignment()
         {
-            var names = new List<string>();
+            var names = new List<string?>();
 
             do
             {
-                names.Add(Consume<LTLiteral>().Value);
+                var val = Consume<LTLiteral>().Value;
+                if (val == "_")
+                    val = null;
+
+                names.Add(val);
             } while (Now([(null, Operator.Comma.ToToken())], true));
 
             Require(Operator.Assign.ToToken(), "':='");
