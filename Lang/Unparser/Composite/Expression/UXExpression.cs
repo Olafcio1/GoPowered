@@ -23,6 +23,8 @@ namespace GoPowered.Lang.Unparser
 
             if (expr.Target is ESTBoolean boolean)
                 output += HandleESTBoolean(boolean);
+            else if (expr.Target is ESTInteger integer)
+                output += HandleESTInteger(integer);
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
@@ -30,5 +32,6 @@ namespace GoPowered.Lang.Unparser
         }
 
         protected partial string HandleESTBoolean(ESTBoolean boolean);
+        protected partial string HandleESTInteger(ESTInteger integer);
     }
 }
