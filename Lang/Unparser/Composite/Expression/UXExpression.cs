@@ -31,7 +31,7 @@ namespace GoPowered.Lang.Unparser
                 output += HandleESTChar(@char);
             else if (expr.Target is ESTString @string)
                 output += HandleESTString(@string);
-            else if ((ESTNil)expr.Target == ESTNil.INSTANCE)
+            else if (expr.Target == ESTNil.INSTANCE)
                 output += HandleESTNil();
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
