@@ -21,22 +21,33 @@ namespace GoPowered.Lang.Unparser
                     output += "&";
             }
 
-            if (expr.Target is ESTBoolean boolean)
-                output += HandleESTBoolean(boolean);
-            else if (expr.Target is ESTInteger integer)
-                output += HandleESTInteger(integer);
-            else if (expr.Target is ESTFloat @float)
-                output += HandleESTFloat(@float);
-            else if (expr.Target is ESTChar @char)
-                output += HandleESTChar(@char);
-            else if (expr.Target is ESTString @string)
-                output += HandleESTString(@string);
-            else if (expr.Target == ESTNil.INSTANCE)
-                output += HandleESTNil();
+                 if (HandleSingular(expr.Target, ref output));
+            else if (HandleClosure(expr.Target, ref output));
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
             return output;
+        }
+
+        protected partial bool HandleClosure(IExpressionTarget target, ref string output);
+
+        protected bool HandleSingular(IExpressionTarget target, ref string output)
+        {
+            if (target is ESTBoolean boolean)
+                output += HandleESTBoolean(boolean);
+            else if (target is ESTInteger integer)
+                output += HandleESTInteger(integer);
+            else if (target is ESTFloat @float)
+                output += HandleESTFloat(@float);
+            else if (target is ESTChar @char)
+                output += HandleESTChar(@char);
+            else if (target is ESTString @string)
+                output += HandleESTString(@string);
+            else if (target == ESTNil.INSTANCE)
+                output += HandleESTNil();
+            else return false;
+
+            return true;
         }
 
         protected partial string HandleESTBoolean(ESTBoolean boolean);
