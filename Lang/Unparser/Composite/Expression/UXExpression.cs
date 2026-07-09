@@ -27,6 +27,8 @@ namespace GoPowered.Lang.Unparser
                 output += HandleESTInteger(integer);
             else if (expr.Target is ESTFloat @float)
                 output += HandleESTFloat(@float);
+            else if (expr.Target is ESTChar @char)
+                output += HandleESTChar(@char);
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
@@ -36,5 +38,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleESTBoolean(ESTBoolean boolean);
         protected partial string HandleESTInteger(ESTInteger integer);
         protected partial string HandleESTFloat(ESTFloat @float);
+        protected partial string HandleESTChar(ESTChar @char);
     }
 }
