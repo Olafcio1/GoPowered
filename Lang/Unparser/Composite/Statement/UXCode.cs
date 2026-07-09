@@ -28,6 +28,10 @@ namespace GoPowered.Lang.Unparser
                     {
                         output += HandleContinue(@continue);
                     }
+                    else if (stmt is StmtExpression expr)
+                    {
+                        output += HandleAnyExpression(expr.Expr);
+                    }
                     else
                     {
                         throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
