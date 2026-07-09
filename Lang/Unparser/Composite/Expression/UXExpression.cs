@@ -31,6 +31,8 @@ namespace GoPowered.Lang.Unparser
                 output += HandleESTChar(@char);
             else if (expr.Target is ESTString @string)
                 output += HandleESTString(@string);
+            else if ((ESTNil)expr.Target == ESTNil.INSTANCE)
+                output += HandleESTNil();
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
@@ -42,5 +44,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleESTFloat(ESTFloat @float);
         protected partial string HandleESTChar(ESTChar @char);
         protected partial string HandleESTString(ESTString @string);
+        protected partial string HandleESTNil();
     }
 }
