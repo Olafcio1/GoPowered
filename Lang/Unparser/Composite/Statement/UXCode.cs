@@ -16,7 +16,11 @@ namespace GoPowered.Lang.Unparser
                 {
                     output += "\n\t";
 
-                    if (stmt is StmtBreak @break)
+                    if (stmt is StmtAssign assign)
+                    {
+                        output += HandleAssign(assign);
+                    }
+                    else if (stmt is StmtBreak @break)
                     {
                         output += HandleBreak(@break);
                     }
@@ -38,6 +42,7 @@ namespace GoPowered.Lang.Unparser
             return output;
         }
 
+        protected partial string HandleAssign(StmtAssign stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
     }
