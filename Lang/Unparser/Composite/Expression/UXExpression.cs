@@ -29,6 +29,14 @@ namespace GoPowered.Lang.Unparser
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
+            if (!expr.Singular)
+            {
+                foreach (var part in expr.Parts!)
+                {
+                    throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
+                }
+            }
+
             return output;
         }
 
