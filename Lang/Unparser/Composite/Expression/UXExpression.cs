@@ -26,6 +26,7 @@ namespace GoPowered.Lang.Unparser
             else if (HandleMake(expr.Target, ref output));
             else if (HandleReference(expr.Target, ref output));
             else if (HandleNest(expr.Target, ref output));
+            else if (HandleReceive(expr.Target, ref output));
             else
                 throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
 
@@ -44,6 +45,7 @@ namespace GoPowered.Lang.Unparser
         protected partial bool HandleMake(IExpressionTarget target, ref string output);
         protected partial bool HandleReference(IExpressionTarget target, ref string output);
         protected partial bool HandleNest(IExpressionTarget target, ref string output);
+        protected partial bool HandleReceive(IExpressionTarget target, ref string output);
 
         protected bool HandleSingular(IExpressionTarget target, ref string output)
         {
