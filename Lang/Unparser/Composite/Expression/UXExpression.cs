@@ -1,5 +1,6 @@
 ﻿using GoPowered.Lang.Parser;
 using GoPowered.Lang.Parser.Token.Expr;
+using GoPowered.Lang.Parser.Token.Expr.Part;
 using GoPowered.Lang.Parser.Token.Expr.Target.Single;
 
 namespace GoPowered.Lang.Unparser
@@ -34,7 +35,9 @@ namespace GoPowered.Lang.Unparser
             {
                 foreach (var part in expr.Parts!)
                 {
-                    throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
+                    if (HandleSquare(part, ref output));
+                    else
+                        throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
                 }
             }
 
@@ -46,6 +49,8 @@ namespace GoPowered.Lang.Unparser
         protected partial bool HandleReference(IExpressionTarget target, ref string output);
         protected partial bool HandleNest(IExpressionTarget target, ref string output);
         protected partial bool HandleReceive(IExpressionTarget target, ref string output);
+
+        protected partial bool HandleSquare(IExpressionPart part, ref string output);
 
         protected bool HandleSingular(IExpressionTarget target, ref string output)
         {
