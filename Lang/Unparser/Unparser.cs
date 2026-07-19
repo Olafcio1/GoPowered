@@ -2,6 +2,8 @@
 using GoPowered.Lang.Parser.Token;
 using GoPowered.Lang.Parser.Token.Object;
 using GoPowered.Lang.Parser.Token.Object.Section;
+using GoPowered.Lang.Parser.Token.Statement;
+using GoPowered.Lang.Parser.Token.Statement.Implementation;
 using GoPowered.Lang.Parser.Type;
 
 namespace GoPowered.Lang.Unparser
@@ -89,6 +91,17 @@ namespace GoPowered.Lang.Unparser
                 else if (tok is PTImportAll importAll)
                 {
                     HandleImportAll(importAll);
+                }
+                else if (tok is IStatement) {
+                    if (tok is StmtAssign assign)
+                    {
+                        output += "\n";
+                        output += HandleAssign(assign);
+                    }
+                    else
+                    {
+                        throw new UnparserError("Unexpected statement '" + TypeOf(tok) + "'");
+                    }
                 }
                 else
                 {
