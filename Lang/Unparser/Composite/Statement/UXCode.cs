@@ -36,6 +36,10 @@ namespace GoPowered.Lang.Unparser
                     {
                         output += HandleAnyExpression(expr.Expr);
                     }
+                    else if (stmt is StmtReturn @return)
+                    {
+                        output += HandleReturn(@return);
+                    }
                     else
                     {
                         throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -54,5 +58,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleConst(StmtConst stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
+        protected partial string HandleReturn(StmtReturn stmt);
     }
 }
