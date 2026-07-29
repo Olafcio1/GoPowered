@@ -8,15 +8,15 @@ namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        private partial StmtSwitchValue ParseValueSwitch(IAnyExpression isValue)
+        private partial StmtSwitchType ParseTypeSwitch(IAnyExpression isValue)
         {
             Require(Operator.LCurly.ToToken(), "'{'");
 
-            var token = new StmtSwitchValue{
-                                               Value = isValue,
-                                               Cases = [],
-                                               Default = null
-                                           };
+            var token = new StmtSwitchType{
+                                              Value = isValue,
+                                              Cases = [],
+                                              Default = null
+                                          };
 
             List<IStatement>? branch = null;
             var @default = false;
@@ -29,12 +29,12 @@ namespace GoPowered.Lang.Parser
                     break;
 
                 if (Now([(null, Keyword.CASE.ToToken())], true)) {
-                    var expectation = ParseExpression();
+                    var expectation = ParseType()!;
 
                     Require(Operator.Colon.ToToken(), "':'");
 
                     branch = [];
-                    token.Cases.Add(new SwitchValueCase(expectation, branch));
+                    token.Cases.Add(new SwitchTypeCase(expectation, branch));
 
                     continue;
                 }

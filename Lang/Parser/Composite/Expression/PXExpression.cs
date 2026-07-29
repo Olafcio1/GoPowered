@@ -8,7 +8,7 @@ namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false)
+        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false)
         {
             IExpressionTarget? target;
             IAnyExpression expr;
@@ -21,7 +21,7 @@ namespace GoPowered.Lang.Parser
 
             if ((target = ParseSingularExpression(optional: true)) != null)
                 expr = new Expression(target, null, 0, Singular: true);
-            else expr = ParsePartExpression(allowInit: allowInit, constant: constant);
+            else expr = ParsePartExpression(allowInit: allowInit, constant: constant, allowTypeCast: allowTypeCast);
 
             if (logicNeg) expr = new LNegate(expr);
             else if (mathNeg) expr = new MNegate(expr);

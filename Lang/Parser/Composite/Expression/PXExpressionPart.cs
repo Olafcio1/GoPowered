@@ -103,7 +103,7 @@ namespace GoPowered.Lang.Parser
         /**
          * I also like to call it the `friendly expression`, as it's friendly to [expression] parts
          */
-        protected partial Expression ParsePartExpression(bool allowInit = true, bool constant = false)
+        protected partial Expression ParsePartExpression(bool allowInit = true, bool constant = false, bool allowTypeCast = false)
         {
             var pointers = CountPointers();
             var target = ParseExpressionTarget(allowInit: allowInit, constant: constant);
@@ -113,7 +113,10 @@ namespace GoPowered.Lang.Parser
 
             while (true)
             {
-                if (ParseCast(parts));
+                if (allowTypeCast && Now([(null, Operator.Dot.ToToken()), (null, Operator.LParen.ToToken()), (null, Keyword.TYPE.ToToken()), (null, Operator.RParen.ToToken())], consume: false)) {
+                    break;
+                }
+                else if (ParseCast(parts));
                 else if (ParseMember(parts));
                 else if (!constant && ParseSquare(parts, allowInit));
                 else if (!constant && ParseCall(parts));

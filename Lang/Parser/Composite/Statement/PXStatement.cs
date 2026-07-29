@@ -39,9 +39,22 @@ namespace GoPowered.Lang.Parser
             else if (Now([(null, Keyword.SWITCH.ToToken())], true))
             {
                 if (Now([(null, Operator.LCurly.ToToken())], false))
+                {
                     return ParseSwitch();
+                }
                 else
-                    return ParseValueSwitch();
+                {
+                    var expr = ParseExpression(allowInit: false, allowTypeCast: true);
+
+                    if (Now([(null, Operator.Dot.ToToken()), (null, Operator.LParen.ToToken()), (null, Keyword.TYPE.ToToken()), (null, Operator.RParen.ToToken())], true))
+                    {
+                        return ParseTypeSwitch(expr);
+                    }
+                    else
+                    {
+                        return ParseValueSwitch(expr);
+                    }
+                }
             }
             else if (Now([(null, Keyword.FALLTHROUGH.ToToken())], true))
                 return ParseFallthrough();
@@ -169,7 +182,8 @@ namespace GoPowered.Lang.Parser
         private partial StmtClose ParseClose();
         private partial StmtSelect ParseSelect();
         private partial StmtSwitch ParseSwitch();
-        private partial StmtSwitchValue ParseValueSwitch();
+        private partial StmtSwitchType ParseTypeSwitch(IAnyExpression expr);
+        private partial StmtSwitchValue ParseValueSwitch(IAnyExpression expr);
         private partial StmtFallthrough ParseFallthrough();
         private partial StmtContinue ParseContinue();
         private partial StmtBreak ParseBreak();

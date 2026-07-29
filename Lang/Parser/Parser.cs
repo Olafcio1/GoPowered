@@ -227,7 +227,7 @@ namespace GoPowered.Lang.Parser
             return (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit);
         }
 
-        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false);
+        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false);
 
         protected Condition ParseCondition(bool allowInit = true)
         {
@@ -249,7 +249,7 @@ namespace GoPowered.Lang.Parser
         /**
          * I also like to call it the `friendly expression`, as it's friendly to [expression] parts
          */
-        protected partial Expression ParsePartExpression(bool allowInit = true, bool constant = false);
+        protected partial Expression ParsePartExpression(bool allowInit = true, bool constant = false, bool allowTypeCast = false);
 
         protected partial IExpressionTarget ParseExpressionTarget(bool allowInit = true, bool constant = false);
 
