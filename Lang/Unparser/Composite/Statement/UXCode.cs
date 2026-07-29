@@ -56,6 +56,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleDefer(defer);
             }
+            else if (stmt is StmtClose close)
+            {
+                return HandleClose(close);
+            }
             else
             {
                 throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -68,5 +72,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleContinue(StmtContinue stmt);
         protected partial string HandleReturn(StmtReturn stmt);
         protected partial string HandleDefer(StmtDefer stmt);
+        protected partial string HandleClose(StmtClose stmt);
     }
 }
