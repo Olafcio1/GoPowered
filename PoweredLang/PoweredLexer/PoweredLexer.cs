@@ -51,6 +51,34 @@ namespace GoPowered.PoweredLang.PoweredLexer
                         return true;
                     }
                 }
+                else if (Now("${"))
+                {
+                    AddToken(new LTString(value));
+                    value = "";
+
+                    AddToken(new LTOperator(Operator.Plus));
+                    AddToken(new LTOperator(Operator.LParen));
+
+                    int open = 0;
+
+                    while (true)
+                    {
+                        if (Peek() == '{')
+                            open++;
+                        else if (Peek() == '}')
+                            if (open-- == 0)
+                                break;
+
+                        Lex1();
+                    }
+
+                    if (open == -1)
+                        Skip();
+                    else throw new LexerError("unterminated string interpolation");
+
+                    AddToken(new LTOperator(Operator.RParen));
+                    AddToken(new LTOperator(Operator.Plus));
+                }
                 else
                 {
                     value += Consume();

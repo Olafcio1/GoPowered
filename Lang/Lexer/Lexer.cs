@@ -18,37 +18,41 @@ namespace GoPowered.Lang.Lexer
         {
             while (!ReachedEOF())
             {
-                #pragma warning disable CS0642
-                if (LexNumber());
-                else if (Now("//")) {
-                    // Comments
-                    while (Consume() != '\n');
-
-                    output.Add(LTNewLine.INSTANCE);
-                }
-                else if (Now("/*")) {
-                    // Multiline comments
-                    while (!Now("*/"))
-                        Consume();
-
-                    output.Add(LTNewLine.INSTANCE);
-                }
-                else if (LexOperator());
-                else if (LexLiteral());
-                else if (LexString());
-                else if (LexMulString());
-                else if (LexChar());
-                else if (Now('\r') || Now('\n'))
-                    // Newlines
-                    output.Add(LTNewLine.INSTANCE);
-                else if (Peek() <= 32)
-                    // Control keys
-                    index++;
-                else throw new LexerError("unexpected '" + Consume() + "'");
-                #pragma warning restore CS0642
+                Lex1();
             }
 
             return output;
+        }
+
+        protected void Lex1() {
+            #pragma warning disable CS0642
+            if (LexNumber());
+            else if (Now("//")) {
+                // Comments
+                while (Consume() != '\n');
+
+                output.Add(LTNewLine.INSTANCE);
+            }
+            else if (Now("/*")) {
+                // Multiline comments
+                while (!Now("*/"))
+                    Consume();
+
+                output.Add(LTNewLine.INSTANCE);
+            }
+            else if (LexOperator());
+            else if (LexLiteral());
+            else if (LexString());
+            else if (LexMulString());
+            else if (LexChar());
+            else if (Now('\r') || Now('\n'))
+                // Newlines
+                output.Add(LTNewLine.INSTANCE);
+            else if (Peek() <= 32)
+                // Control keys
+                index++;
+            else throw new LexerError("unexpected '" + Consume() + "'");
+            #pragma warning restore CS0642
         }
 
         protected char Consume()
