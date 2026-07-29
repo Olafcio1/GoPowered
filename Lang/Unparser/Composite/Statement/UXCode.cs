@@ -15,35 +15,7 @@ namespace GoPowered.Lang.Unparser
                 foreach (var stmt in code)
                 {
                     output += "\n\t";
-
-                    if (stmt is StmtAssign assign)
-                    {
-                        output += HandleAssign(assign);
-                    }
-                    else if (stmt is StmtConst @const)
-                    {
-                        output += HandleConst(@const);
-                    }
-                    else if (stmt is StmtBreak @break)
-                    {
-                        output += HandleBreak(@break);
-                    }
-                    else if (stmt is StmtContinue @continue)
-                    {
-                        output += HandleContinue(@continue);
-                    }
-                    else if (stmt is StmtExpression expr)
-                    {
-                        output += HandleAnyExpression(expr.Expr);
-                    }
-                    else if (stmt is StmtReturn @return)
-                    {
-                        output += HandleReturn(@return);
-                    }
-                    else
-                    {
-                        throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
-                    }
+                    output += HandleStatement(stmt);
                 }
 
                 output += "\n";
@@ -54,10 +26,47 @@ namespace GoPowered.Lang.Unparser
             return output;
         }
 
+        private string HandleStatement(IStatement stmt)
+        {
+            if (stmt is StmtAssign assign)
+            {
+                return HandleAssign(assign);
+            }
+            else if (stmt is StmtConst @const)
+            {
+                return HandleConst(@const);
+            }
+            else if (stmt is StmtBreak @break)
+            {
+                return HandleBreak(@break);
+            }
+            else if (stmt is StmtContinue @continue)
+            {
+                return HandleContinue(@continue);
+            }
+            else if (stmt is StmtExpression expr)
+            {
+                return HandleAnyExpression(expr.Expr);
+            }
+            else if (stmt is StmtReturn @return)
+            {
+                return HandleReturn(@return);
+            }
+            else if (stmt is StmtDefer defer)
+            {
+                return HandleDefer(defer);
+            }
+            else
+            {
+                throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
+            }
+        }
+
         protected partial string HandleAssign(StmtAssign stmt);
         protected partial string HandleConst(StmtConst stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
         protected partial string HandleReturn(StmtReturn stmt);
+        protected partial string HandleDefer(StmtDefer stmt);
     }
 }
