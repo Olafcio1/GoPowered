@@ -20,6 +20,10 @@ namespace GoPowered.Lang.Unparser
                     {
                         output += HandleAssign(assign);
                     }
+                    else if (stmt is StmtConst @const)
+                    {
+                        output += HandleConst(@const);
+                    }
                     else if (stmt is StmtBreak @break)
                     {
                         output += HandleBreak(@break);
@@ -47,6 +51,7 @@ namespace GoPowered.Lang.Unparser
         }
 
         protected partial string HandleAssign(StmtAssign stmt);
+        protected partial string HandleConst(StmtConst stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
     }

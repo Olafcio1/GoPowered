@@ -98,6 +98,11 @@ namespace GoPowered.Lang.Unparser
                         output += "\n";
                         output += HandleAssign(assign);
                     }
+                    else if (tok is StmtConst @const)
+                    {
+                        output += "\n";
+                        output += HandleConst(@const);
+                    }
                     else
                     {
                         throw new UnparserError("Unexpected statement '" + TypeOf(tok) + "'");
