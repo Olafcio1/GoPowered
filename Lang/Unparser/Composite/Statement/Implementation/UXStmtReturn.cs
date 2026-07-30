@@ -10,8 +10,14 @@ namespace GoPowered.Lang.Unparser
 
             if (stmt.Values != null)
             {
+                var first = true;
+
                 foreach (var value in stmt.Values)
                 {
+                    if (first)
+                        first = false;
+                    else output += ", ";
+
                     output += " ";
                     output += HandleAnyExpression(value);
                 }
