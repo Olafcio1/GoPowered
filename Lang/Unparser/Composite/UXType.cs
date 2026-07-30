@@ -10,8 +10,8 @@ namespace GoPowered.Lang.Unparser
         {
             if (type is AnyType)
                 return "any";
-            else if (type is ArrayType)
-                return "---";
+            else if (type is ArrayType array)
+                return "[" + HandleAnyExpression(array.Amount) + "]" + HandleType(array.ElementType);
             else if (type is ChannelType chan)
                 return "chan " + HandleType(chan.Type);
             else if (type is FunctionType func)
