@@ -21,6 +21,16 @@ namespace GoPowered.Lang.Unparser
 
                 return output;
             }
+            else if (expr is LBoth both)
+            {
+                var output = "";
+                
+                output += HandleAnyExpression(both.A);
+                output += " && ";
+                output += HandleAnyExpression(both.B);
+
+                return output;
+            }
 
             throw new UnparserError("Expected a condition");
         }
