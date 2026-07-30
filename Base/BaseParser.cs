@@ -105,7 +105,7 @@ namespace GoPowered.Base
 
             do
             {
-                if (TypeOf(Peek(i)) != skip)
+                if (ReachedEOF(i + 1) || TypeOf(Peek(i)) != skip)
                     break;
 
                 i++;
