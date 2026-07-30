@@ -7,7 +7,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected string HandleExpression(Expression expr)
+        protected virtual string HandleExpression(Expression expr)
         {
             var output = "";
 
