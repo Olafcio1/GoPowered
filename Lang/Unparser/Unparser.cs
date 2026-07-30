@@ -56,70 +56,76 @@ namespace GoPowered.Lang.Unparser
 
             foreach (var tok in input.output)
             {
-                if (tok is PTFunction func)
-                {
-                    HandleFunction(func);
-                }
-                else if (tok is PTTypeAlias typeAlias)
-                {
-                    HandleTypeAlias(typeAlias);
-                }
-                else if (tok is PTTypeClone typeClone)
-                {
-                    HandleTypeClone(typeClone);
-                }
-                else if (tok is PTTypeStruct typeStruct)
-                {
-                    HandleTypeStruct(typeStruct);
-                }
-                else if (tok is PTTypeInterface typeInterface)
-                {
-                    HandleTypeInterface(typeInterface);
-                }
-                else if (tok is PTTypeGeneric typeGeneric)
-                {
-                    HandleTypeGeneric(typeGeneric);
-                }
-                else if (tok is PTImport import)
-                {
-                    HandleImport(import);
-                }
-                else if (tok is PTImportAs importAs)
-                {
-                    HandleImportAs(importAs);
-                }
-                else if (tok is PTImportAll importAll)
-                {
-                    HandleImportAll(importAll);
-                }
-                else if (tok is IStatement) {
-                    if (tok is StmtAssign assign)
-                    {
-                        output += "\n";
-                        output += HandleAssign(assign);
-                    }
-                    else if (tok is StmtExtractAssign assignex)
-                    {
-                        output += "\n";
-                        output += HandleExtractAssign(assignex);
-                    }
-                    else if (tok is StmtConst @const)
-                    {
-                        output += "\n";
-                        output += HandleConst(@const);
-                    }
-                    else
-                    {
-                        throw new UnparserError("Unexpected statement '" + TypeOf(tok) + "'");
-                    }
-                }
-                else
-                {
-                    throw new UnparserError("Unexpected '" + TypeOf(tok) + "'");
-                }
+                Unparse1(tok);
             }
 
             return output;
+        }
+
+        protected virtual void Unparse1(IParserToken tok)
+        {
+            if (tok is PTFunction func)
+            {
+                HandleFunction(func);
+            }
+            else if (tok is PTTypeAlias typeAlias)
+            {
+                HandleTypeAlias(typeAlias);
+            }
+            else if (tok is PTTypeClone typeClone)
+            {
+                HandleTypeClone(typeClone);
+            }
+            else if (tok is PTTypeStruct typeStruct)
+            {
+                HandleTypeStruct(typeStruct);
+            }
+            else if (tok is PTTypeInterface typeInterface)
+            {
+                HandleTypeInterface(typeInterface);
+            }
+            else if (tok is PTTypeGeneric typeGeneric)
+            {
+                HandleTypeGeneric(typeGeneric);
+            }
+            else if (tok is PTImport import)
+            {
+                HandleImport(import);
+            }
+            else if (tok is PTImportAs importAs)
+            {
+                HandleImportAs(importAs);
+            }
+            else if (tok is PTImportAll importAll)
+            {
+                HandleImportAll(importAll);
+            }
+            else if (tok is IStatement)
+            {
+                if (tok is StmtAssign assign)
+                {
+                    output += "\n";
+                    output += HandleAssign(assign);
+                }
+                else if (tok is StmtExtractAssign assignex)
+                {
+                    output += "\n";
+                    output += HandleExtractAssign(assignex);
+                }
+                else if (tok is StmtConst @const)
+                {
+                    output += "\n";
+                    output += HandleConst(@const);
+                }
+                else
+                {
+                    throw new UnparserError("Unexpected statement '" + TypeOf(tok) + "'");
+                }
+            }
+            else
+            {
+                throw new UnparserError("Unexpected '" + TypeOf(tok) + "'");
+            }
         }
 
         protected partial void HandleFunction(PTFunction func);

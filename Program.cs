@@ -1,6 +1,6 @@
-﻿using GoPowered.Lang.Unparser;
-using GoPowered.PoweredLang.PoweredLexer;
+﻿using GoPowered.PoweredLang.PoweredLexer;
 using GoPowered.PoweredLang.PoweredParser;
+using GoPowered.PoweredLang.PoweredUnparser;
 using System.Collections;
 using System.Text;
 
@@ -15,7 +15,7 @@ namespace GoPowered {
                 var lexed = new PoweredLexer(File.ReadAllText(path)
                                                  .ReplaceLineEndings("\n")).Lex();
                 var parser = new PoweredParser(lexed).Parse();
-                var unparser = new Unparser(parser).Unparse();
+                var unparser = new PoweredUnparser(parser).Unparse();
 
                 Console.Write(unparser);
             } else {
