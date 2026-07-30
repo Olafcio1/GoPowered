@@ -88,6 +88,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleChannelSend(channelSend);
             }
+            else if (stmt is StmtSelect select)
+            {
+                return HandleSelect(select);
+            }
             else
             {
                 throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -108,5 +112,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleForRange(StmtForRange stmt);
         protected partial string HandleClose(StmtClose stmt);
         protected partial string HandleChannelSend(StmtChannelSend stmt);
+        protected partial string HandleSelect(StmtSelect stmt);
     }
 }
