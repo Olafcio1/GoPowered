@@ -1,6 +1,7 @@
 ﻿using GoPowered.Lang.Parser;
 using GoPowered.Lang.Parser.Token;
 using GoPowered.Lang.Parser.Token.Expr;
+using GoPowered.Lang.Parser.Token.ExprLogic;
 using GoPowered.Lang.Parser.Token.ExprMath;
 
 namespace GoPowered.Lang.Unparser
@@ -13,6 +14,8 @@ namespace GoPowered.Lang.Unparser
                 return HandleExpression(expr);
             else if (anyExpr is MathExpression mathExpr)
                 return HandleMathExpression(mathExpr);
+            else if (anyExpr is ICondition conditionExpr)
+                return HandleLogicExpression(conditionExpr);
             else
                 throw new UnparserError("Expected an expression");
         }
