@@ -98,6 +98,11 @@ namespace GoPowered.Lang.Unparser
                         output += "\n";
                         output += HandleAssign(assign);
                     }
+                    else if (tok is StmtExtractAssign assignex)
+                    {
+                        output += "\n";
+                        output += HandleExtractAssign(assignex);
+                    }
                     else if (tok is StmtConst @const)
                     {
                         output += "\n";

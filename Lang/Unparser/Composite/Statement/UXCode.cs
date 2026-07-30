@@ -32,6 +32,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleAssign(assign);
             }
+            else if (stmt is StmtExtractAssign assignex)
+            {
+                return HandleExtractAssign(assignex);
+            }
             else if (stmt is StmtConst @const)
             {
                 return HandleConst(@const);
@@ -67,6 +71,7 @@ namespace GoPowered.Lang.Unparser
         }
 
         protected partial string HandleAssign(StmtAssign stmt);
+        protected partial string HandleExtractAssign(StmtExtractAssign stmt);
         protected partial string HandleConst(StmtConst stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
