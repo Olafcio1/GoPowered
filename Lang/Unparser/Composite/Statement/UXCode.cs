@@ -64,6 +64,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleDefer(defer);
             }
+            else if (stmt is StmtIf @if)
+            {
+                return HandleIf(@if);
+            }
             else if (stmt is StmtForLoop forLoop)
             {
                 return HandleForLoop(forLoop);
@@ -86,6 +90,7 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleReturn(StmtReturn stmt);
         protected partial string HandleSet(StmtSet stmt);
         protected partial string HandleDefer(StmtDefer stmt);
+        protected partial string HandleIf(StmtIf stmt);
         protected partial string HandleForLoop(StmtForLoop stmt);
         protected partial string HandleClose(StmtClose stmt);
     }
