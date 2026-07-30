@@ -41,6 +41,15 @@ namespace GoPowered.Lang.Unparser
 
                 return output;
             }
+            else if (expr is LNegate negate)
+            {
+                var output = "";
+
+                output += "!";
+                output += HandleAnyExpression(negate.Expr);
+
+                return output;
+            }
 
             throw new UnparserError("Expected a condition");
         }
