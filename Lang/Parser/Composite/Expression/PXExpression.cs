@@ -8,7 +8,7 @@ namespace GoPowered.Lang.Parser
 {
     public partial class Parser
     {
-        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false)
+        protected virtual partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false)
         {
             IExpressionTarget? target;
             IAnyExpression expr;

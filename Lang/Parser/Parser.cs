@@ -227,7 +227,7 @@ namespace GoPowered.Lang.Parser
             return (Expression) ParseExpression(allowMath: false, allowLogic: false, allowInit: allowInit);
         }
 
-        protected partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false);
+        protected virtual partial IAnyExpression ParseExpression(bool allowMath = true, bool allowLogic = true, bool allowInit = true, bool constant = false, bool allowTypeCast = false);
 
         protected Condition ParseCondition(bool allowInit = true)
         {
