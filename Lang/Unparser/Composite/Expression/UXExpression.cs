@@ -38,6 +38,7 @@ namespace GoPowered.Lang.Unparser
                          if (HandleSquare(part, ref output));
                     else if (HandleCast(part, ref output));
                     else if (HandleMember(part, ref output));
+                    else if (HandleCall(part, ref output));
                     else
                         throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
                 }
@@ -55,6 +56,7 @@ namespace GoPowered.Lang.Unparser
         protected partial bool HandleSquare(IExpressionPart part, ref string output);
         protected partial bool HandleCast(IExpressionPart part, ref string output);
         protected partial bool HandleMember(IExpressionPart part, ref string output);
+        protected partial bool HandleCall(IExpressionPart part, ref string output);
 
         protected bool HandleSingular(IExpressionTarget target, ref string output)
         {
