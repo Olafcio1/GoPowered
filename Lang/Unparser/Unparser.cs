@@ -44,7 +44,7 @@ namespace GoPowered.Lang.Unparser
             return dashed;
         }
 
-        public string Unparse()
+        public virtual string Unparse()
         {
             output += "/**\n";
             output += " * Code compiled from GoPowered\n";
