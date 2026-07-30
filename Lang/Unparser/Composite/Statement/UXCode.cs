@@ -72,6 +72,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleForLoop(forLoop);
             }
+            else if (stmt is StmtForRange forRange)
+            {
+                return HandleForRange(forRange);
+            }
             else if (stmt is StmtClose close)
             {
                 return HandleClose(close);
@@ -92,6 +96,7 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleDefer(StmtDefer stmt);
         protected partial string HandleIf(StmtIf stmt);
         protected partial string HandleForLoop(StmtForLoop stmt);
+        protected partial string HandleForRange(StmtForRange stmt);
         protected partial string HandleClose(StmtClose stmt);
     }
 }
