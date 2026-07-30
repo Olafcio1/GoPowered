@@ -22,35 +22,45 @@ namespace GoPowered.Lang.Unparser
                     output += "&";
             }
 
-                 if (HandleSingular(expr.Target, ref output));
-            else if (HandleClosure(expr.Target, ref output));
-            else if (HandleMake(expr.Target, ref output));
-            else if (HandleReference(expr.Target, ref output));
-            else if (HandleNest(expr.Target, ref output));
-            else if (HandleReceive(expr.Target, ref output));
-            else if (HandleConvert(expr.Target, ref output));
-            else if (HandleMap(expr.Target, ref output));
-            else if (HandleSlice(expr.Target, ref output));
-            else if (HandleImplicitStruct(expr.Target, ref output));
-            else
-                throw new UnparserError("Unexpected expression target '" + TypeOf(expr.Target).Substring(3) + "'");
+            HandleExpressionTarget(expr.Target, ref output);
 
             if (!expr.Singular)
             {
                 foreach (var part in expr.Parts!)
                 {
-                         if (HandleSquare(part, ref output));
-                    else if (HandleCast(part, ref output));
-                    else if (HandleMember(part, ref output));
-                    else if (HandleCall(part, ref output));
-                    else if (HandleNew(part, ref output));
-                    else if (HandleSlice(part, ref output));
-                    else
-                        throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
+                    HandleExpressionPart(part, ref output);
                 }
             }
 
             return output;
+        }
+
+        protected virtual void HandleExpressionTarget(IExpressionTarget target, ref string output)
+        {
+                 if (HandleSingular(target, ref output));
+            else if (HandleClosure(target, ref output));
+            else if (HandleMake(target, ref output));
+            else if (HandleReference(target, ref output));
+            else if (HandleNest(target, ref output));
+            else if (HandleReceive(target, ref output));
+            else if (HandleConvert(target, ref output));
+            else if (HandleMap(target, ref output));
+            else if (HandleSlice(target, ref output));
+            else if (HandleImplicitStruct(target, ref output));
+            else
+                throw new UnparserError("Unexpected expression target '" + TypeOf(target).Substring(3) + "'");
+        }
+
+        protected virtual void HandleExpressionPart(IExpressionPart part, ref string output)
+        {
+                 if (HandleSquare(part, ref output));
+            else if (HandleCast(part, ref output));
+            else if (HandleMember(part, ref output));
+            else if (HandleCall(part, ref output));
+            else if (HandleNew(part, ref output));
+            else if (HandleSlice(part, ref output));
+            else
+                throw new UnparserError("Unexpected expression part '" + TypeOf(part).Substring(3) + "'");
         }
 
         protected partial bool HandleClosure(IExpressionTarget target, ref string output);
