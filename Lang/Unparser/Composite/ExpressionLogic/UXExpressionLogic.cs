@@ -31,6 +31,16 @@ namespace GoPowered.Lang.Unparser
 
                 return output;
             }
+            else if (expr is LEither either)
+            {
+                var output = "";
+
+                output += HandleAnyExpression(either.A);
+                output += " || ";
+                output += HandleAnyExpression(either.B);
+
+                return output;
+            }
 
             throw new UnparserError("Expected a condition");
         }
