@@ -52,6 +52,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleContinue(@continue);
             }
+            else if (stmt is StmtFallthrough @fallthrough)
+            {
+                return HandleFallthrough(fallthrough);
+            }
             else if (stmt is StmtExpression expr)
             {
                 return HandleAnyExpression(expr.Expr);
@@ -112,6 +116,7 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleConst(StmtConst stmt);
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
+        protected partial string HandleFallthrough(StmtFallthrough stmt);
         protected partial string HandleReturn(StmtReturn stmt);
         protected partial string HandleSet(StmtSet stmt);
         protected partial string HandleDefer(StmtDefer stmt);
