@@ -56,6 +56,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleReturn(@return);
             }
+            else if (stmt is StmtSet set)
+            {
+                return HandleSet(set);
+            }
             else if (stmt is StmtDefer defer)
             {
                 return HandleDefer(defer);
@@ -80,6 +84,7 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleBreak(StmtBreak stmt);
         protected partial string HandleContinue(StmtContinue stmt);
         protected partial string HandleReturn(StmtReturn stmt);
+        protected partial string HandleSet(StmtSet stmt);
         protected partial string HandleDefer(StmtDefer stmt);
         protected partial string HandleForLoop(StmtForLoop stmt);
         protected partial string HandleClose(StmtClose stmt);
