@@ -104,6 +104,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleSwitchValue(switchValue);
             }
+            else if (stmt is StmtSwitchType switchType)
+            {
+                return HandleSwitchType(switchType);
+            }
             else
             {
                 throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -127,6 +131,7 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleChannelSend(StmtChannelSend stmt);
         protected partial string HandleSelect(StmtSelect stmt);
         protected partial string HandleSwitch(StmtSwitch stmt);
+        protected partial string HandleSwitchType(StmtSwitchType stmt);
         protected partial string HandleSwitchValue(StmtSwitchValue stmt);
     }
 }
