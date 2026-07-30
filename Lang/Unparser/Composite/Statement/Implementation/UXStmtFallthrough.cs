@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleFallthrough(StmtFallthrough stmt)
+        protected virtual partial string HandleFallthrough(StmtFallthrough stmt)
         {
             return "fallthrough";
         }

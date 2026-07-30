@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleClose(StmtClose stmt)
+        protected virtual partial string HandleClose(StmtClose stmt)
         {
             var output = "close(";
 

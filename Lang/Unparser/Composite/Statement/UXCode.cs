@@ -26,7 +26,7 @@ namespace GoPowered.Lang.Unparser
             return output;
         }
 
-        private string HandleStatement(IStatement stmt)
+        protected virtual string HandleStatement(IStatement stmt)
         {
             if (stmt is StmtAssign assign)
             {
@@ -114,24 +114,24 @@ namespace GoPowered.Lang.Unparser
             }
         }
 
-        protected partial string HandleAssign(StmtAssign stmt);
-        protected partial string HandleExtractAssign(StmtExtractAssign stmt);
-        protected partial string HandleSetExtract(StmtExtractSet stmt);
-        protected partial string HandleConst(StmtConst stmt);
-        protected partial string HandleBreak(StmtBreak stmt);
-        protected partial string HandleContinue(StmtContinue stmt);
-        protected partial string HandleFallthrough(StmtFallthrough stmt);
-        protected partial string HandleReturn(StmtReturn stmt);
-        protected partial string HandleSet(StmtSet stmt);
-        protected partial string HandleDefer(StmtDefer stmt);
-        protected partial string HandleIf(StmtIf stmt);
-        protected partial string HandleForLoop(StmtForLoop stmt);
-        protected partial string HandleForRange(StmtForRange stmt);
-        protected partial string HandleClose(StmtClose stmt);
-        protected partial string HandleChannelSend(StmtChannelSend stmt);
-        protected partial string HandleSelect(StmtSelect stmt);
-        protected partial string HandleSwitch(StmtSwitch stmt);
-        protected partial string HandleSwitchType(StmtSwitchType stmt);
-        protected partial string HandleSwitchValue(StmtSwitchValue stmt);
+        protected virtual partial string HandleAssign(StmtAssign stmt);
+        protected virtual partial string HandleExtractAssign(StmtExtractAssign stmt);
+        protected virtual partial string HandleSetExtract(StmtExtractSet stmt);
+        protected virtual partial string HandleConst(StmtConst stmt);
+        protected virtual partial string HandleBreak(StmtBreak stmt);
+        protected virtual partial string HandleContinue(StmtContinue stmt);
+        protected virtual partial string HandleFallthrough(StmtFallthrough stmt);
+        protected virtual partial string HandleReturn(StmtReturn stmt);
+        protected virtual partial string HandleSet(StmtSet stmt);
+        protected virtual partial string HandleDefer(StmtDefer stmt);
+        protected virtual partial string HandleIf(StmtIf stmt);
+        protected virtual partial string HandleForLoop(StmtForLoop stmt);
+        protected virtual partial string HandleForRange(StmtForRange stmt);
+        protected virtual partial string HandleClose(StmtClose stmt);
+        protected virtual partial string HandleChannelSend(StmtChannelSend stmt);
+        protected virtual partial string HandleSelect(StmtSelect stmt);
+        protected virtual partial string HandleSwitch(StmtSwitch stmt);
+        protected virtual partial string HandleSwitchType(StmtSwitchType stmt);
+        protected virtual partial string HandleSwitchValue(StmtSwitchValue stmt);
     }
 }

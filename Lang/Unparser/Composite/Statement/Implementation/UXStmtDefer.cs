@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleDefer(StmtDefer stmt)
+        protected virtual partial string HandleDefer(StmtDefer stmt)
         {
             var output = "defer ";
 

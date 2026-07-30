@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleChannelSend(StmtChannelSend stmt)
+        protected virtual partial string HandleChannelSend(StmtChannelSend stmt)
         {
             var output = "";
 

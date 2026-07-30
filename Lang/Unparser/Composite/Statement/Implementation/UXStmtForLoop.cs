@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleForLoop(StmtForLoop stmt)
+        protected virtual partial string HandleForLoop(StmtForLoop stmt)
         {
             var output = "for ";
 

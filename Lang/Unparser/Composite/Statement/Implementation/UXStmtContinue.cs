@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleContinue(StmtContinue stmt)
+        protected virtual partial string HandleContinue(StmtContinue stmt)
         {
             return "continue";
         }

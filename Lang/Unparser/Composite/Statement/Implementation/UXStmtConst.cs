@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleConst(StmtConst stmt)
+        protected virtual partial string HandleConst(StmtConst stmt)
         {
             var output = "const ";
 

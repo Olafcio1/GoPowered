@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleExtractAssign(StmtExtractAssign stmt)
+        protected virtual partial string HandleExtractAssign(StmtExtractAssign stmt)
         {
             var output = "";
             var first = true;

@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleIf(StmtIf stmt)
+        protected virtual partial string HandleIf(StmtIf stmt)
         {
             var output = "if ";
             var first = true;

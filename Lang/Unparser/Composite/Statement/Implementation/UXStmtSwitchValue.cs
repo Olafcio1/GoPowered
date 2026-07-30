@@ -4,7 +4,7 @@ namespace GoPowered.Lang.Unparser
 {
     public partial class Unparser
     {
-        protected partial string HandleSwitchValue(StmtSwitchValue stmt)
+        protected virtual partial string HandleSwitchValue(StmtSwitchValue stmt)
         {
             var output = "";
 
