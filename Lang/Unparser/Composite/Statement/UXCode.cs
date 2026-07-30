@@ -84,6 +84,10 @@ namespace GoPowered.Lang.Unparser
             {
                 return HandleClose(close);
             }
+            else if (stmt is StmtChannelSend channelSend)
+            {
+                return HandleChannelSend(channelSend);
+            }
             else
             {
                 throw new UnparserError("Unexpected statement '" + TypeOf(stmt) + "'");
@@ -103,5 +107,6 @@ namespace GoPowered.Lang.Unparser
         protected partial string HandleForLoop(StmtForLoop stmt);
         protected partial string HandleForRange(StmtForRange stmt);
         protected partial string HandleClose(StmtClose stmt);
+        protected partial string HandleChannelSend(StmtChannelSend stmt);
     }
 }
