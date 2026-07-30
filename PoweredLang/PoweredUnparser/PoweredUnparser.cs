@@ -1,5 +1,6 @@
 ﻿using GoPowered.Lang.Parser;
 using GoPowered.Lang.Parser.Token.Expr;
+using GoPowered.Lang.Parser.Token.Statement.Implementation;
 using GoPowered.Lang.Unparser;
 using GoPowered.PoweredLang.PoweredParser.Token.Expr.Part;
 using GoPowered.PoweredLang.PoweredParser.Token.Object;
@@ -46,6 +47,7 @@ namespace GoPowered.PoweredLang.PoweredUnparser
         }
 
         private int requireNotNull_counter = 0;
+        private int requireNotNull_variables = 1;
 
         protected override void HandleExpressionPart(IExpressionPart part, ref string output)
         {
@@ -56,10 +58,29 @@ namespace GoPowered.PoweredLang.PoweredUnparser
 
                 output = $"__callback_{index}()";
 
-                endCode += $"func __callback_{index}[T]() T {{" +
+                var outputs = "output";
+                var generics = "T";
+
+                if (requireNotNull_variables > 1)
+                {
+                    for (int i = 0; i < requireNotNull_variables - 1; i++)
+                    {
+                        outputs += ", ";
+                        outputs += "output";
+                        outputs += i;
+
+                        generics += ", ";
+                        generics += "T";
+                        generics += i;
+                    }
+
+                    requireNotNull_variables = 1;
+                }
+
+                endCode += $"func __callback_{index}[{generics}]() {(generics.Equals("T") ? generics : $"({ generics })")} {{" +
                            $"\n\t";
 
-                endCode += "output";
+                endCode += outputs;
 
                 for (int i = 0; i < noerr.Errors; i++)
                 {
@@ -78,13 +99,25 @@ namespace GoPowered.PoweredLang.PoweredUnparser
                                 "\n\t}";
                 }
 
-                endCode += "\n\treturn output";
+                endCode += "\n\treturn " + outputs;
                 endCode += "\n}\n";
             }
             else
             {
                 base.HandleExpressionPart(part, ref output);
             }
+        }
+
+        protected override string HandleExtractAssign(StmtExtractAssign stmt)
+        {
+            requireNotNull_variables = stmt.Names.Count;
+            return base.HandleExtractAssign(stmt);
+        }
+
+        protected override string HandleSetExtract(StmtExtractSet stmt)
+        {
+            requireNotNull_variables = stmt.ExtractTo.Count;
+            return base.HandleSetExtract(stmt);
         }
     }
 }
