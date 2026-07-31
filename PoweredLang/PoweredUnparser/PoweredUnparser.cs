@@ -50,7 +50,7 @@ namespace GoPowered.PoweredLang.PoweredUnparser
 
         protected override string HandleAssign(StmtAssign stmt)
         {
-            if (stmt.Value != null && stmt.Value is Expression expr && !expr.Singular && expr.Parts![^1] is EPNoError noerr)
+            if (stmt.Value != null && stmt.Value is Expression expr && !expr.Singular && expr.Parts!.Count >= 1 && expr.Parts![^1] is EPNoError noerr)
             {
                 expr.Parts.RemoveAt(expr.Parts.Count - 1);
 
