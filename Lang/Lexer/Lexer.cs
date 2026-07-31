@@ -5,8 +5,20 @@ namespace GoPowered.Lang.Lexer
     public partial class Lexer
     {
         protected readonly string input;
-        protected int index;
+
+        protected int index
+        {
+            get;
+            set {
+                Progress(value - field);
+                field = value;
+            }
+        }
+
         public readonly List<ILexerToken> output;
+
+        public int lineno { get; private set; }
+        public int charno { get; private set; }
 
         public Lexer(string input) {
             this.input = input;
@@ -63,6 +75,22 @@ namespace GoPowered.Lang.Lexer
         protected string Consume(int length)
         {
             return input.Substring(index, index += length);
+        }
+
+        private void Progress(int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                if (Peek(i) == '\n')
+                {
+                    lineno++;
+                    charno = 0;
+                }
+                else
+                {
+                    charno++;
+                }
+            }
         }
 
         protected char Peek(int after = 0)
