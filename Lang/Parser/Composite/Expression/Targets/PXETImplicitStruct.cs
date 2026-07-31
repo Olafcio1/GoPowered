@@ -1,5 +1,6 @@
 ﻿using GoPowered.Lang.Lexer.Token;
 using GoPowered.Lang.Parser.Token;
+using GoPowered.Lang.Parser.Token.AnnotatedExpr;
 using GoPowered.Lang.Parser.Token.Expr.Target;
 
 namespace GoPowered.Lang.Parser
@@ -11,7 +12,7 @@ namespace GoPowered.Lang.Parser
             if (Now([(null, Operator.LCurly.ToToken())], true))
             {
                 var positional = new List<IAnyExpression>();
-                var keyword = new Dictionary<string, IAnyExpression>();
+                var keyword = new Dictionary<string, AnnotatedExpression>();
 
                 HandleList(Operator.RCurly, () =>
                 {
@@ -19,7 +20,7 @@ namespace GoPowered.Lang.Parser
                     {
                         var name = Consume<LTLiteral>().Value;
                         Require(Operator.Colon.ToToken(), "':'");
-                        var value = ParseExpression();
+                        var value = ParseAnnotatedExpression();
 
                         keyword[name] = value;
                     }

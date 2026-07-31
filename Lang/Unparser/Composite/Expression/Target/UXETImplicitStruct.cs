@@ -30,7 +30,7 @@ namespace GoPowered.Lang.Unparser
 
                     output += key;
                     output += ": ";
-                    output += HandleAnyExpression(parameter);
+                    output += HandleAnnotatedExpression(parameter);
                 }
 
                 output += "}";
