@@ -110,7 +110,7 @@ namespace GoPowered.Lang.Lexer
 
         protected bool Now(char ch, int after = 0)
         {
-            if (Peek(after) == ch) {
+            if (!ReachedEOF(after) && Peek(after) == ch) {
                 index += 1 + after;
                 return true;
             } else {

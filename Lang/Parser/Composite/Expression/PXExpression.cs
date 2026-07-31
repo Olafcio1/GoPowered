@@ -26,33 +26,36 @@ namespace GoPowered.Lang.Parser
             if (logicNeg) expr = new LNegate(expr);
             else if (mathNeg) expr = new MNegate(expr);
 
-            if (
-                    allowMath &&
-                    Peek(0) is LTOperator op &&
-                    (
-                            op.Value == Operator.Plus ||
-                            op.Value == Operator.Minus ||
-                            op.Value == Operator.Star ||
-                            op.Value == Operator.Slash ||
-                            op.Value == Operator.Modulus ||
-                            //op.Value == Operator.Exponentiate ||
-                            op.Value == Operator.Ampersand ||
-                            op.Value == Operator.VLine ||
-                            op.Value == Operator.BXor ||
-                            op.Value == Operator.BShiftLeft ||
-                            op.Value == Operator.BShiftRight
-                    )
-            )
+            if (!ReachedEOF(0))
             {
-                expr = ParseMathExpression(allowInit, constant, expr);
-            }
+                if (
+                        allowMath &&
+                        Peek(0) is LTOperator op &&
+                        (
+                                op.Value == Operator.Plus ||
+                                op.Value == Operator.Minus ||
+                                op.Value == Operator.Star ||
+                                op.Value == Operator.Slash ||
+                                op.Value == Operator.Modulus ||
+                                //op.Value == Operator.Exponentiate ||
+                                op.Value == Operator.Ampersand ||
+                                op.Value == Operator.VLine ||
+                                op.Value == Operator.BXor ||
+                                op.Value == Operator.BShiftLeft ||
+                                op.Value == Operator.BShiftRight
+                        )
+                )
+                {
+                    expr = ParseMathExpression(allowInit, constant, expr);
+                }
 
-            if (allowLogic)
-            {
-                ICondition? cond = ParseLogicExpression(allowInit, constant, expr);
+                if (allowLogic)
+                {
+                    ICondition? cond = ParseLogicExpression(allowInit, constant, expr);
 
-                if (cond != null)
-                    return cond;
+                    if (cond != null)
+                        return cond;
+                }
             }
 
             return expr;
